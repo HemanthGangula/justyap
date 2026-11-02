@@ -1,0 +1,168 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 660" width="1220" height="660" font-family="Inter, -apple-system, 'Segoe UI', Ubuntu, Roboto, sans-serif">
+  <title>How justyap works</title>
+  <style>
+    .bg { fill: #ffffff; }
+    .title { fill: #1f2328; font-size: 22px; font-weight: 700; }
+    .group-label { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; }
+    .name { fill: #1f2328; font-size: 16px; font-weight: 700; }
+    .mono { font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 15px; font-weight: 700; }
+    .sub { fill: #59636e; font-size: 12.5px; }
+    .flow { stroke: #6e7781; stroke-width: 1.8; fill: none; }
+    .step { fill: #1f2328; font-size: 12.5px; font-weight: 600; }
+    .badge { fill: #1f2328; }
+    .badge-text { fill: #ffffff; font-size: 11.5px; font-weight: 700; }
+    .note { fill: #59636e; font-size: 13px; }
+
+    .desk { fill: #eef4ff; stroke: #9cb8f0; }
+    .desk-box { fill: #ffffff; stroke: #9cb8f0; }
+    .desk-label { fill: #1f4fa8; }
+    .jy { fill: #fff4ec; stroke: #f0b48a; }
+    .jy-box { fill: #ffffff; stroke: #f0b48a; }
+    .jy-label { fill: #b4501f; }
+    .cc { fill: #f5f0ff; stroke: #bfa8ec; }
+    .cc-box { fill: #ffffff; stroke: #bfa8ec; }
+    .cc-label { fill: #6c3fc4; }
+    .net { fill: #f3f4f6; stroke: #c4c9d0; stroke-dasharray: 6 5; }
+    .net-box { fill: #ffffff; stroke: #c4c9d0; }
+    .net-label { fill: #4b5563; }
+    .group, .box { stroke-width: 1.5; }
+    .grab-box { stroke-dasharray: 5 4; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0d1117; }
+      .title { fill: #e6edf3; font-size: 22px; font-weight: 700; }
+      .name { fill: #e6edf3; font-size: 16px; font-weight: 700; }
+      .sub { fill: #9aa4af; font-size: 12.5px; }
+      .flow { stroke: #8b949e; stroke-width: 1.8; fill: none; }
+      .step { fill: #e6edf3; font-size: 12.5px; font-weight: 600; }
+      .badge { fill: #e6edf3; }
+      .badge-text { fill: #0d1117; font-size: 11.5px; font-weight: 700; }
+      .note { fill: #9aa4af; font-size: 13px; }
+      .desk { fill: #0f1d33; stroke: #2f5597; }
+      .desk-box { fill: #15243d; stroke: #2f5597; }
+      .desk-label { fill: #8db4ff; }
+      .jy { fill: #2a1a10; stroke: #8a4d27; }
+      .jy-box { fill: #352215; stroke: #8a4d27; }
+      .jy-label { fill: #ffa36b; }
+      .cc { fill: #1c1530; stroke: #5d4699; }
+      .cc-box { fill: #261d3f; stroke: #5d4699; }
+      .cc-label { fill: #c2a6ff; }
+      .net { fill: #161b22; stroke: #3d444d; stroke-dasharray: 6 5; }
+      .net-box { fill: #1f262e; stroke: #3d444d; }
+      .net-label { fill: #b6bfc9; }
+      .arrow-head { fill: #8b949e; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path class="arrow-head" d="M0 0 L10 5 L0 10 z" fill="#6e7781"/>
+    </marker>
+    <filter id="lift" x="-10%" y="-10%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect class="bg" width="1220" height="660" rx="18"/>
+  <text class="title" x="40" y="48">How justyap works</text>
+
+  <!-- groups -->
+  <rect class="group desk" x="24" y="76" width="300" height="512" rx="16"/>
+  <text class="group-label desk-label" x="44" y="104">YOUR DESKTOP</text>
+
+  <rect class="group jy" x="394" y="76" width="380" height="512" rx="16"/>
+  <text class="group-label jy-label" x="414" y="104">JUSTYAP · ON YOUR MACHINE</text>
+
+  <rect class="group net" x="864" y="76" width="328" height="150" rx="16"/>
+  <text class="group-label net-label" x="884" y="104">ANTHROPIC · CLOUD</text>
+
+  <rect class="group cc" x="864" y="246" width="328" height="342" rx="16"/>
+  <text class="group-label cc-label" x="884" y="274">CLAUDE CODE · OFFICIAL CLI</text>
+
+  <!-- row 1 -->
+  <g filter="url(#lift)">
+    <rect class="box desk-box" x="44" y="122" width="260" height="88" rx="12"/>
+    <rect class="box jy-box" x="424" y="122" width="320" height="88" rx="12"/>
+    <rect class="box net-box" x="884" y="122" width="288" height="88" rx="12"/>
+  </g>
+  <text class="name" x="64" y="152">Your shortcut</text>
+  <text class="sub" x="64" y="174">Super+Alt+H, F9, or any free key</text>
+  <text class="sub" x="64" y="193">Enter pastes, Esc cancels</text>
+
+  <text class="mono jy-label" x="444" y="152">justyap toggle</text>
+  <text class="sub" x="444" y="174">The command your shortcut runs.</text>
+  <text class="sub" x="444" y="193">First press listens, second press pastes.</text>
+
+  <text class="name" x="904" y="152">Speech-to-text</text>
+  <text class="sub" x="904" y="174">The same service /voice uses.</text>
+  <text class="sub" x="904" y="193">Included in your Claude Pro or Max plan.</text>
+
+  <!-- row 2 -->
+  <g filter="url(#lift)">
+    <rect class="box desk-box" x="44" y="292" width="260" height="88" rx="12"/>
+    <rect class="box jy-box" x="424" y="292" width="320" height="88" rx="12"/>
+    <rect class="box cc-box" x="884" y="292" width="288" height="88" rx="12"/>
+  </g>
+  <text class="name" x="64" y="322">Island</text>
+  <text class="sub" x="64" y="344">Floats at the bottom of the screen,</text>
+  <text class="sub" x="64" y="363">never takes focus, follows your voice</text>
+
+  <text class="name" x="444" y="322">Background service</text>
+  <text class="sub" x="444" y="344">systemd user service, starts with your desktop.</text>
+  <text class="sub" x="444" y="363">Keeps one hidden Claude Code session warm.</text>
+
+  <text class="mono cc-label" x="904" y="322">claude</text>
+  <text class="sub" x="904" y="344">Hidden, in a pseudo-terminal, /voice on.</text>
+  <text class="sub" x="904" y="363">Holding Space is its push-to-talk.</text>
+
+  <!-- row 3 -->
+  <g filter="url(#lift)">
+    <rect class="box desk-box" x="44" y="462" width="260" height="88" rx="12"/>
+    <rect class="box jy-box" x="424" y="462" width="320" height="88" rx="12"/>
+    <rect class="box jy-box grab-box" x="884" y="462" width="288" height="88" rx="12"/>
+  </g>
+  <text class="name" x="64" y="492">Any app</text>
+  <text class="sub" x="64" y="514">Text lands at the cursor, and</text>
+  <text class="sub" x="64" y="533">stays on the clipboard if there's none</text>
+
+  <text class="name" x="444" y="492">Paste</text>
+  <text class="sub" x="444" y="514">Copy with wl-copy or xclip, then Ctrl+V</text>
+  <text class="sub" x="444" y="533">from a short-lived /dev/uinput keyboard.</text>
+
+  <text class="mono jy-label" x="904" y="492">justyap grab</text>
+  <text class="sub" x="904" y="514">Claude Code's $EDITOR: hands the</text>
+  <text class="sub" x="904" y="533">transcript over, empties the prompt.</text>
+
+  <!-- flows -->
+  <path class="flow" d="M304 166 H422" marker-end="url(#arrow)"/>
+  <path class="flow" d="M584 210 V290" marker-end="url(#arrow)"/>
+  <path class="flow" d="M744 336 H882" marker-end="url(#arrow)"/>
+  <path class="flow" d="M1028 290 V212" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <path class="flow" d="M424 336 H306" marker-end="url(#arrow)"/>
+  <path class="flow" d="M1028 380 V460" marker-end="url(#arrow)"/>
+  <path class="flow" d="M884 482 C 834 482, 834 366, 746 366" marker-end="url(#arrow)"/>
+  <path class="flow" d="M584 380 V460" marker-end="url(#arrow)"/>
+  <path class="flow" d="M424 506 H306" marker-end="url(#arrow)"/>
+
+  <!-- step badges and labels -->
+  <g>
+    <circle class="badge" cx="363" cy="166" r="11"/><text class="badge-text" x="363" y="170" text-anchor="middle">1</text>
+    <circle class="badge" cx="584" cy="250" r="11"/><text class="badge-text" x="584" y="254" text-anchor="middle">2</text>
+    <text class="step" x="602" y="254">Unix socket</text>
+    <circle class="badge" cx="813" cy="336" r="11"/><text class="badge-text" x="813" y="340" text-anchor="middle">3</text>
+    <text class="step" x="813" y="318" text-anchor="middle">hold Space</text>
+    <circle class="badge" cx="1028" cy="236" r="11"/><text class="badge-text" x="1028" y="240" text-anchor="middle">4</text>
+    <text class="step" x="1046" y="240">audio in, text out</text>
+    <circle class="badge" cx="365" cy="336" r="11"/><text class="badge-text" x="365" y="340" text-anchor="middle">5</text>
+    <text class="step" x="365" y="318" text-anchor="middle">mic level</text>
+    <circle class="badge" cx="1028" cy="420" r="11"/><text class="badge-text" x="1028" y="424" text-anchor="middle">6</text>
+    <text class="step" x="1046" y="424">Ctrl+G opens $EDITOR</text>
+    <circle class="badge" cx="827" cy="424" r="11"/><text class="badge-text" x="827" y="428" text-anchor="middle">7</text>
+    <text class="step" x="876" y="428">transcript</text>
+    <circle class="badge" cx="584" cy="420" r="11"/><text class="badge-text" x="584" y="424" text-anchor="middle">8</text>
+    <text class="step" x="602" y="424">text</text>
+    <circle class="badge" cx="365" cy="506" r="11"/><text class="badge-text" x="365" y="510" text-anchor="middle">9</text>
+    <text class="step" x="365" y="488" text-anchor="middle">Ctrl+V</text>
+  </g>
+
+  <text class="note" x="40" y="626">Only Claude Code talks to the network. justyap never reads your credentials and never presses Enter,</text>
+  <text class="note" x="40" y="645">so nothing you say is ever sent to Claude as a prompt.</text>
+</svg>

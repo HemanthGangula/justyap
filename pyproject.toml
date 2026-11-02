@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "justyap"
+dynamic = ["version"]
+description = "System-wide voice dictation for Linux, powered by Claude Code's built-in /voice"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Hemanth Gangula" }]
+requires-python = ">=3.10"
+dependencies = []
+keywords = ["dictation", "speech-to-text", "voice", "claude-code", "wayland", "linux"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+
+[project.urls]
+Homepage = "https://github.com/HemanthGangula/justyap"
+Issues = "https://github.com/HemanthGangula/justyap/issues"
+
+[project.scripts]
+justyap = "justyap.__main__:main"
+
+[tool.hatch.version]
+path = "src/justyap/__init__.py"
+
+[tool.ruff]
+line-length = 130
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "SIM", "RUF"]
