@@ -18,12 +18,13 @@ System-wide voice dictation for Linux, powered by the speech-to-text already bui
 Press a hotkey, speak, press Enter. justyap pastes what you said wherever your cursor is:
 a chat, your editor, a browser form, the terminal.
 
-- **No new account, no API key, no extra bill.** It uses your existing Claude Code sign-in.
-  Claude Code's dictation doesn't count against your messages or tokens.
-- **Every app.** Wayland and X11. With nowhere to type, the text waits on your clipboard.
-- **Honest feedback.** An island at the bottom of the screen follows Claude Code's own
-  microphone meter, so it only moves when your voice is actually being heard.
-- **Small and dependency-free.** Under 1,000 lines of Python, standard library only.
+- **Runs on the Claude plan you already pay for.** justyap uses your existing Claude Code
+  login, and dictation doesn't count against your messages or tokens.
+- **Works in any app on Wayland and X11.** When nothing focused can take text, the text
+  stays on your clipboard for Ctrl+V.
+- **Shows when it hears you.** An island at the bottom of the screen follows Claude Code's
+  own microphone meter.
+- **Small.** Under 1,000 lines of standard-library Python.
 
 ## Requirements
 
