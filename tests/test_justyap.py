@@ -1,3 +1,4 @@
+import contextlib
 import json
 import os
 import socket
@@ -7,6 +8,7 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from justyap import keyboard
 from justyap.daemon import LISTEN_TIMEOUT, mic_level
@@ -41,6 +43,29 @@ class KeyboardTest(unittest.TestCase):
 
     def test_uinput_device_matches_kernel_struct(self):
         self.assertEqual(len(keyboard.UINPUT_DEVICE), 1116)
+
+    def test_paste_puts_back_text_but_leaves_images_alone(self):
+        stack = contextlib.ExitStack()
+        self.addCleanup(stack.close)
+        tmp = Path(stack.enter_context(tempfile.TemporaryDirectory()))
+        clip, types = tmp / "clip", tmp / "types"
+        (tmp / "wl-copy").write_text(f"#!/bin/sh\ncat > {clip}\necho text/plain > {types}\n")
+        (tmp / "wl-paste").write_text(f'#!/bin/sh\n[ "$1" = --list-types ] && exec cat {types}\nexec cat {clip}\n')
+        for tool in ("wl-copy", "wl-paste"):
+            (tmp / tool).chmod(0o755)
+        stack.enter_context(mock.patch.dict(os.environ, {"WAYLAND_DISPLAY": "test", "PATH": f"{tmp}:{os.environ['PATH']}"}))
+        stack.enter_context(mock.patch.object(keyboard, "RESTORE_DELAY", 0))
+        pasted = []
+        stack.enter_context(mock.patch.object(keyboard, "press", lambda _keys: pasted.append(clip.read_text())))
+
+        clip.write_text("my copied link")
+        types.write_text("text/plain\n")
+        keyboard.paste("hello world", "ctrl+v")
+        self.assertEqual((pasted, clip.read_text()), (["hello world"], "my copied link"))
+
+        types.write_text("image/png\n")
+        keyboard.paste("hello again", "ctrl+v")
+        self.assertEqual(clip.read_text(), "hello again")
 
 
 class MicLevelTest(unittest.TestCase):

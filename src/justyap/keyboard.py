@@ -1,8 +1,10 @@
-"""Paste text at the cursor: copy it to the clipboard, then press the paste keys on a
-short-lived virtual keyboard (/dev/uinput). Works on Wayland and X11."""
+"""Paste text at the cursor: copy it to the clipboard, press the paste keys on a
+short-lived virtual keyboard (/dev/uinput), then put the previous clipboard text back.
+Works on Wayland and X11."""
 
 from __future__ import annotations
 
+import contextlib
 import fcntl
 import os
 import shutil
@@ -21,6 +23,10 @@ INPUT_EVENT = "llHHi"
 
 DEVICE_SETTLE = 0.2
 FLUSH_DELAY = 0.05
+RESTORE_DELAY = 0.5  # the app fetches the clipboard after the keypress; putting the old text back sooner pastes that instead
+
+TEXT_TYPES = {"text/plain", "text/plain;charset=utf-8", "UTF8_STRING", "STRING"}
+KEEP_AS_IS = ("image/", "text/uri-list", "x-special/gnome-copied-files", "x-kde-passwordManagerHint")
 
 
 class PasteError(Exception):
@@ -40,8 +46,29 @@ def clipboard_command() -> list[str]:
 
 
 def paste(text: str, combo: str) -> None:
+    """Paste, then put back the text that was on the clipboard before."""
+    previous = read_clipboard()
     copy_to_clipboard(text)
     press(parse_keys(combo))
+    if previous is not None:
+        time.sleep(RESTORE_DELAY)
+        with contextlib.suppress(PasteError):
+            copy_to_clipboard(previous)
+
+
+def read_clipboard() -> str | None:
+    """The clipboard's text, or None when it is empty or holds something else (an image, files, a password)."""
+    wayland = bool(os.environ.get("WAYLAND_DISPLAY"))
+    list_types = ["wl-paste", "--list-types"] if wayland else ["xclip", "-selection", "clipboard", "-o", "-t", "TARGETS"]
+    read_text = ["wl-paste", "--no-newline", "--type", "text/plain"] if wayland else ["xclip", "-selection", "clipboard", "-o"]
+    try:
+        types = subprocess.run(list_types, capture_output=True, check=True, timeout=2).stdout.decode().split()
+        if not TEXT_TYPES.intersection(types) or any(t.startswith(KEEP_AS_IS) for t in types):
+            return None
+        # ponytail: text only, so rich text comes back as plain text
+        return subprocess.run(read_text, capture_output=True, check=True, timeout=2).stdout.decode()
+    except (OSError, subprocess.SubprocessError, UnicodeDecodeError):
+        return None
 
 
 def copy_to_clipboard(text: str) -> None:

@@ -50,8 +50,9 @@ the `justyap` command and starts a user service that runs with your desktop sess
 1. Press **Super+Alt+H** and speak. The island appears and follows your voice.
 2. Press **Enter** to paste, or **Esc** to cancel. Pressing the hotkey again also pastes.
 
-If nothing that accepts text has focus, the island shows **Copied to clipboard** instead, and
-the text is ready for Ctrl+V.
+Whatever text you had copied is put back on the clipboard after the paste. If nothing that
+accepts text has focus, the island shows **Copied to clipboard** instead, and the text is ready
+for Ctrl+V.
 
 Enter and Esc are only captured while you're dictating. Recording stops on its own after
 15 seconds of silence or about 2 minutes; press Enter to paste what was captured. If anything
@@ -141,7 +142,7 @@ sudo rm /etc/udev/rules.d/70-justyap-uinput.rules
 
 - The island appears on the primary monitor.
 - Text arrives when you stop speaking, not word by word.
-- Pasting replaces your clipboard contents.
+- Only text is put back on the clipboard after a paste; rich text comes back as plain text.
 
 ## Contributing
 

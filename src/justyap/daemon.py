@@ -41,6 +41,7 @@ SETTLE_MIN = 0.3
 SETTLE_IDLE = 0.4
 SETTLE_TIMEOUT = 15.0
 GRAB_TIMEOUT = 5.0
+OVERLAY_ANSWER_TIMEOUT = 1.0  # overlay.can_paste gives up on a slow accessibility bus after 0.3 s per call
 RESPAWN_DELAY = 2.0
 SCREEN_LIMIT = 16_384
 
@@ -180,7 +181,10 @@ class Overlay:
             return
         try:
             self.process = subprocess.Popen(
-                [SYSTEM_PYTHON, str(OVERLAY_SCRIPT)], stdin=subprocess.PIPE, env={**os.environ, "GDK_BACKEND": "x11"}
+                [SYSTEM_PYTHON, str(OVERLAY_SCRIPT)],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                env={**os.environ, "GDK_BACKEND": "x11"},
             )
         except OSError as error:
             log.warning("could not show the overlay: %s", error)
@@ -193,6 +197,13 @@ class Overlay:
             self.process.stdin.flush()
         except OSError:
             self.hide()
+
+    def done(self) -> bool:
+        """Show the done state. False when nothing focused takes text: the island then says "Copied to clipboard"."""
+        self.send("done")
+        if not self.process or not select.select([self.process.stdout], [], [], OVERLAY_ANSWER_TIMEOUT)[0]:
+            return True  # unknown counts as pasteable, as in overlay.can_paste
+        return self.process.stdout.readline().strip() != b"copy"
 
     def hide(self) -> None:
         # ponytail: not waited on, so an error can stay on screen; subprocess reaps it on the next Popen
@@ -268,8 +279,8 @@ class Daemon:
         self.recording_since = None
         self.overlay.send("processing")
         reply = self._collect()
-        if "text" in reply:
-            self.overlay.send("done")  # the island shows it only when nothing focused could take the paste
+        if "text" in reply and not self.overlay.done():
+            reply["copy_only"] = "yes"  # nowhere to paste, so the text stays on the clipboard for Ctrl+V
         self._end_dictation(reply.get("error"))
         return reply
 

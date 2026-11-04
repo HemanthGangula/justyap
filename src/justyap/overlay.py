@@ -4,7 +4,8 @@ Runs under the system Python (PyGObject) as an X11 popup on XWayland, so it stay
 above every window without ever taking keyboard focus. The daemon drives it over
 stdin, one command per line: `level <0..1>`, `processing`, `done`, `error <message>`.
 `done` says "Copied to clipboard", but only when the accessibility bus shows that nothing
-focused takes text, so the paste had nowhere to go. EOF closes the island, after a short
+focused takes text, so the paste has nowhere to go; it answers `paste` or `copy` on stdout
+so the text is then only copied. EOF closes the island, after a short
 pause when it is showing a message.
 """
 
@@ -75,6 +76,12 @@ def can_paste() -> bool:
     return True
 
 
+def answer(pasteable: bool) -> bool:
+    """Tell the daemon, on stdout, whether `justyap toggle` should paste or only copy."""
+    print("paste" if pasteable else "copy", flush=True)
+    return pasteable
+
+
 FONT_SIZE = 13
 LABELS = {"listening": "Listening", "processing": "Transcribing…"}
 
@@ -124,7 +131,7 @@ class Island(Gtk.Window):
                 self.level = float(value)
             elif command in LABELS:
                 self.state = command
-            elif command == "done" and can_paste():
+            elif command == "done" and answer(can_paste()):
                 continue
             elif command in MESSAGES:
                 self.state, self.message = command, value or DONE_TEXT

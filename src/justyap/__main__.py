@@ -51,7 +51,10 @@ def toggle(paste_keys: str) -> int:
     if reply.get("state") == "listening":
         return 0
     try:
-        keyboard.paste(reply["text"], paste_keys)
+        if reply.get("copy_only"):
+            keyboard.copy_to_clipboard(reply["text"])
+        else:
+            keyboard.paste(reply["text"], paste_keys)
     except keyboard.PasteError as error:
         report(str(error))
         return 1
