@@ -4,8 +4,8 @@ Runs under the system Python (PyGObject) as an X11 popup on XWayland, so it stay
 above every window without ever taking keyboard focus. The daemon drives it over
 stdin, one command per line: `level <0..1>`, `processing`, `done`, `error <message>`.
 `done` says "Copied to clipboard", but only when the accessibility bus shows that nothing
-focused takes text, so the paste has nowhere to go; it answers `paste` or `copy` on stdout
-so the text is then only copied. EOF closes the island, after a short
+focused takes text, so the paste has nowhere to go. It also answers on stdout (see `answer`),
+so the clipboard is only restored after a paste it's sure landed. EOF closes the island, after a short
 pause when it is showing a message.
 """
 
@@ -43,10 +43,10 @@ TICK_WIDTH = 18  # the tick drawn before DONE_TEXT, including the gap
 A11Y_TIMEOUT_MS = 300
 
 
-def can_paste() -> bool:
-    """Whether the focused element takes text. Unknown counts as yes, so "Copied" never shows after a paste that worked."""
+def focus_takes_text() -> bool | None:
+    """Whether the focused element takes text, or None when the accessibility bus can't tell."""
     if Atspi is None:
-        return True
+        return None
     Atspi.set_timeout(A11Y_TIMEOUT_MS, A11Y_TIMEOUT_MS)
     focused = Atspi.MatchRule.new(
         Atspi.StateSet.new([Atspi.StateType.FOCUSED]),
@@ -68,18 +68,20 @@ def can_paste() -> bool:
                 collection = window.get_collection_iface()
                 matches = collection.get_matches(focused, Atspi.CollectionSortOrder.CANONICAL, 1, True) if collection else []
                 if not matches:
-                    return True
+                    return None
                 target = matches[0]
                 return target.get_state_set().contains(Atspi.StateType.EDITABLE) or target.get_role() == Atspi.Role.TERMINAL
     except GLib.Error:
         pass
-    return True
+    return None
 
 
-def answer(pasteable: bool) -> bool:
-    """Tell the daemon, on stdout, whether `justyap toggle` should paste or only copy."""
-    print("paste" if pasteable else "copy", flush=True)
-    return pasteable
+def answer(takes_text: bool | None) -> bool:
+    """Tell the daemon on stdout: `paste` (sure it lands), `try` (can't tell) or `copy` (nowhere to type).
+
+    Returns whether to paste, so "Copied to clipboard" only shows when it's sure the paste had nowhere to go."""
+    print({True: "paste", None: "try", False: "copy"}[takes_text], flush=True)
+    return takes_text is not False
 
 
 FONT_SIZE = 13
@@ -131,7 +133,7 @@ class Island(Gtk.Window):
                 self.level = float(value)
             elif command in LABELS:
                 self.state = command
-            elif command == "done" and answer(can_paste()):
+            elif command == "done" and answer(focus_takes_text()):
                 continue
             elif command in MESSAGES:
                 self.state, self.message = command, value or DONE_TEXT

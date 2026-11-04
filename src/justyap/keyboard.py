@@ -45,9 +45,9 @@ def clipboard_command() -> list[str]:
     return ["wl-copy"] if os.environ.get("WAYLAND_DISPLAY") else ["xclip", "-selection", "clipboard"]
 
 
-def paste(text: str, combo: str) -> None:
-    """Paste, then put back the text that was on the clipboard before."""
-    previous = read_clipboard()
+def paste(text: str, combo: str, restore: bool = False) -> None:
+    """Paste, then optionally put back the text that was on the clipboard before."""
+    previous = read_clipboard() if restore else None
     copy_to_clipboard(text)
     press(parse_keys(combo))
     if previous is not None:

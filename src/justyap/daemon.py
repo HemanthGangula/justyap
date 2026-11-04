@@ -41,7 +41,7 @@ SETTLE_MIN = 0.3
 SETTLE_IDLE = 0.4
 SETTLE_TIMEOUT = 15.0
 GRAB_TIMEOUT = 5.0
-OVERLAY_ANSWER_TIMEOUT = 1.0  # overlay.can_paste gives up on a slow accessibility bus after 0.3 s per call
+OVERLAY_ANSWER_TIMEOUT = 1.0  # overlay.focus_takes_text gives up on a slow accessibility bus after 0.3 s per call
 RESPAWN_DELAY = 2.0
 SCREEN_LIMIT = 16_384
 
@@ -198,12 +198,12 @@ class Overlay:
         except OSError:
             self.hide()
 
-    def done(self) -> bool:
-        """Show the done state. False when nothing focused takes text: the island then says "Copied to clipboard"."""
+    def done(self) -> str:
+        """Show the done state and return the island's answer: `paste`, `try` or `copy` (see overlay.answer)."""
         self.send("done")
         if not self.process or not select.select([self.process.stdout], [], [], OVERLAY_ANSWER_TIMEOUT)[0]:
-            return True  # unknown counts as pasteable, as in overlay.can_paste
-        return self.process.stdout.readline().strip() != b"copy"
+            return "try"
+        return self.process.stdout.readline().decode().strip() or "try"
 
     def hide(self) -> None:
         # ponytail: not waited on, so an error can stay on screen; subprocess reaps it on the next Popen
@@ -279,8 +279,8 @@ class Daemon:
         self.recording_since = None
         self.overlay.send("processing")
         reply = self._collect()
-        if "text" in reply and not self.overlay.done():
-            reply["copy_only"] = "yes"  # nowhere to paste, so the text stays on the clipboard for Ctrl+V
+        if "text" in reply:
+            reply["paste"] = self.overlay.done()
         self._end_dictation(reply.get("error"))
         return reply
 

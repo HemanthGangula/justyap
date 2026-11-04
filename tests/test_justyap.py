@@ -44,7 +44,7 @@ class KeyboardTest(unittest.TestCase):
     def test_uinput_device_matches_kernel_struct(self):
         self.assertEqual(len(keyboard.UINPUT_DEVICE), 1116)
 
-    def test_paste_puts_back_text_but_leaves_images_alone(self):
+    def test_paste_restores_text_only_when_asked_and_never_images(self):
         stack = contextlib.ExitStack()
         self.addCleanup(stack.close)
         tmp = Path(stack.enter_context(tempfile.TemporaryDirectory()))
@@ -60,11 +60,14 @@ class KeyboardTest(unittest.TestCase):
 
         clip.write_text("my copied link")
         types.write_text("text/plain\n")
-        keyboard.paste("hello world", "ctrl+v")
+        keyboard.paste("hello world", "ctrl+v", restore=True)
         self.assertEqual((pasted, clip.read_text()), (["hello world"], "my copied link"))
 
+        keyboard.paste("not sure it landed", "ctrl+v")
+        self.assertEqual(clip.read_text(), "not sure it landed")
+
         types.write_text("image/png\n")
-        keyboard.paste("hello again", "ctrl+v")
+        keyboard.paste("hello again", "ctrl+v", restore=True)
         self.assertEqual(clip.read_text(), "hello again")
 
 
@@ -116,7 +119,7 @@ class DaemonCase(unittest.TestCase):
 class DaemonTest(DaemonCase):
     def test_dictation_round_trip(self):
         time.sleep(0.5)
-        self.assertEqual(self.request("toggle"), {"text": "hello world"})
+        self.assertEqual(self.request("toggle"), {"text": "hello world", "paste": "try"})
 
     def test_quick_double_tap_reports_no_speech(self):
         self.assertEqual(self.request("toggle"), {"error": "No speech detected."})

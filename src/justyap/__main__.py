@@ -51,10 +51,10 @@ def toggle(paste_keys: str) -> int:
     if reply.get("state") == "listening":
         return 0
     try:
-        if reply.get("copy_only"):
+        if reply.get("paste") == "copy":  # nowhere to type: the text waits on the clipboard for Ctrl+V
             keyboard.copy_to_clipboard(reply["text"])
-        else:
-            keyboard.paste(reply["text"], paste_keys)
+        else:  # put the old clipboard back only when sure the paste landed, or the dictation would be lost
+            keyboard.paste(reply["text"], paste_keys, restore=reply.get("paste") == "paste")
     except keyboard.PasteError as error:
         report(str(error))
         return 1
