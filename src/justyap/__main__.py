@@ -44,11 +44,11 @@ def ask_daemon(command: str) -> dict[str, str] | None:
     return reply
 
 
-def toggle(paste_keys: str) -> int:
-    reply = ask_daemon("toggle")
+def dictate(command: str, paste_keys: str) -> int:
+    reply = ask_daemon(command)
     if reply is None:
         return 1
-    if reply.get("state") == "listening":
+    if "text" not in reply:  # started listening, or there was nothing to stop
         return 0
     try:
         if reply.get("paste") == "copy":  # nowhere to type: the text waits on the clipboard for Ctrl+V
@@ -81,6 +81,9 @@ def build_parser() -> argparse.ArgumentParser:
     paste_help = "keys that paste in the focused app, e.g. ctrl+shift+v for terminals (default: %(default)s)"
     toggle_cmd = commands.add_parser("toggle", help="start listening, or stop and paste the text (bind this to a hotkey)")
     toggle_cmd.add_argument("--paste-keys", type=key_combo, default=DEFAULT_PASTE_KEYS, help=paste_help)
+    commands.add_parser("start", help="start listening; does nothing if already listening (for hold-to-talk key press)")
+    stop_cmd = commands.add_parser("stop", help="stop and paste the text; does nothing if not listening (for key release)")
+    stop_cmd.add_argument("--paste-keys", type=key_combo, default=DEFAULT_PASTE_KEYS, help=paste_help)
 
     setup_cmd = commands.add_parser("setup", help="install the background service and the GNOME hotkey")
     setup_cmd.add_argument("--hotkey", default=DEFAULT_HOTKEY, help="GNOME accelerator (default: %(default)s)")
@@ -101,8 +104,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
-        if args.command == "toggle":
-            return toggle(args.paste_keys)
+        if args.command in ("toggle", "start", "stop"):
+            return dictate(args.command, getattr(args, "paste_keys", DEFAULT_PASTE_KEYS))
         if args.command == "setup":
             return service.setup(args.hotkey, args.paste_keys)
         if args.command == "cancel":

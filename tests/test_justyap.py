@@ -121,6 +121,14 @@ class DaemonTest(DaemonCase):
         time.sleep(0.5)
         self.assertEqual(self.request("toggle"), {"text": "hello world", "paste": "try"})
 
+    def test_hold_to_talk_start_repeats_and_stop_when_idle_are_harmless(self):
+        self.assertEqual(self.request("start"), {"state": "listening"})  # key auto-repeat
+        time.sleep(0.5)
+        self.assertEqual(self.request("stop"), {"text": "hello world", "paste": "try"})
+        self.assertEqual(self.request("stop"), {"state": "idle"})
+        self.assertEqual(self.request("start"), {"state": "listening"})
+        self.assertEqual(self.request("toggle"), {"error": "No speech detected."})
+
     def test_quick_double_tap_reports_no_speech(self):
         self.assertEqual(self.request("toggle"), {"error": "No speech detected."})
 

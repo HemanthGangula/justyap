@@ -76,6 +76,9 @@ justyap setup --paste-keys ctrl+shift+v    # for terminals
 
 The dictation language follows Claude Code's `language` setting (`/config` in Claude Code).
 On desktops other than GNOME, `setup` prints the command to bind in your keyboard settings.
+For hold-to-talk on a desktop that can run one command when a key is pressed and another when
+it's released, bind `justyap start` to the press and `justyap stop` to the release. A held key
+repeating `start` keeps listening, and `stop` does nothing when you aren't dictating.
 
 ## How it works
 

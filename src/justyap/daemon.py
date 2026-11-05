@@ -217,7 +217,7 @@ class Overlay:
 
 
 class Daemon:
-    """Serves `toggle` and `cancel` on a Unix socket: toggle starts recording, then returns the text."""
+    """Serves `toggle`, `start`, `stop` and `cancel` on a Unix socket. Recording starts, then stopping returns the text."""
 
     def __init__(self, claude: str) -> None:
         self.server = _listen()
@@ -259,7 +259,7 @@ class Daemon:
                 command = conn.recv(64).decode().strip()
             except OSError:
                 return
-            handler = {"toggle": self.toggle, "cancel": self.cancel}.get(command)
+            handler = {"toggle": self.toggle, "start": self.start, "stop": self.stop, "cancel": self.cancel}.get(command)
             reply = handler() if handler else {"error": f"Unknown command: {command!r}"}
             try:
                 conn.sendall(json.dumps(reply).encode())
@@ -283,6 +283,13 @@ class Daemon:
             reply["paste"] = self.overlay.done()
         self._end_dictation(reply.get("error"))
         return reply
+
+    def start(self) -> dict[str, str]:
+        """Like toggle, but a repeat (a held key auto-repeating) keeps listening instead of stopping."""
+        return {"state": "listening"} if self.recording_since is not None else self.toggle()
+
+    def stop(self) -> dict[str, str]:
+        return {"state": "idle"} if self.recording_since is None else self.toggle()
 
     def cancel(self) -> dict[str, str]:
         if self.recording_since is None:
