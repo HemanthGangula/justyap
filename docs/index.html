@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>justyap: voice typing for every Linux app, with Claude Code's /voice</title>
-<meta name="description" content="Open source voice typing for Linux. justyap turns Claude Code's built-in /voice into dictation for every app: browser, editor, chat and terminal, on Wayland and X11. A Wispr Flow alternative for Linux.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>justyap for Linux: voice typing in every app, with Claude Code's /voice</title>
+<meta name="description" content="Voice typing for Ubuntu, Fedora, Arch and every Linux app. Press your hotkey, talk, press Enter, and the text lands wherever your cursor is. No model to download, no API key. A Wispr Flow alternative for Linux.">
 <link rel="canonical" href="https://hemanthgangula.github.io/justyap/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="justyap: voice typing for every Linux app">
-<meta property="og:description" content="Claude Code's /voice, in every app on Linux. Open source.">
+<meta property="og:title" content="justyap for Linux: voice typing in every app">
+<meta property="og:description" content="Press your hotkey, talk, press Enter. The text lands wherever your cursor is.">
 <meta property="og:url" content="https://hemanthgangula.github.io/justyap/">
 <meta property="og:image" content="https://hemanthgangula.github.io/justyap/social-preview.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -19,288 +19,297 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"justyap","applicationCategory":"UtilitiesApplication","operatingSystem":"Linux","description":"Voice typing for every Linux app, powered by Claude Code's built-in /voice speech-to-text.","url":"https://hemanthgangula.github.io/justyap/","codeRepository":"https://github.com/HemanthGangula/justyap","license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"Hemanth","url":"https://github.com/HemanthGangula"}}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"justyap for Linux","applicationCategory":"UtilitiesApplication","operatingSystem":"Linux (Ubuntu, Debian, Fedora, Arch)","description":"Voice typing for every Linux app, powered by Claude Code's built-in /voice speech-to-text. No model to download, no API key.","url":"https://hemanthgangula.github.io/justyap/","codeRepository":"https://github.com/HemanthGangula/justyap","license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"Hemanth","url":"https://github.com/HemanthGangula"}}
 </script>
 <style>
 :root{
   --bg:#0c0b0d; --panel:#141318; --line:#25232a; --line2:#35323b;
-  --text:#eeebe6; --muted:#a19d96; --faint:#6a6661;
-  --accent:#d97857; --ink:#1a0f0a; --ok:#73d98c;
+  --text:#eeebe6; --muted:#a39f98; --faint:#6d6964;
+  --accent:#d97857; --ink:#1a0f0a; --ok:#73d98c; --err:#ff746b;
   --serif:"Instrument Serif",Georgia,serif; --sans:Inter,system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit}
 ::selection{background:var(--accent);color:var(--ink)}
+.wrap{width:100%;max-width:1120px;margin:0 auto;padding:0 20px}
 .wordmark{font-weight:800;letter-spacing:-.04em;text-decoration:none;font-size:21px}
 .wordmark b{color:var(--accent)}
-kbd{font:600 12px var(--mono);padding:4px 9px;border-radius:7px;border:1px solid var(--line2);border-bottom-width:3px;background:#1a191e;color:var(--muted)}
+.wordmark small{font:500 11px var(--mono);letter-spacing:.06em;color:var(--faint);margin-left:6px;text-transform:uppercase}
+kbd{display:inline-block;font:600 12px/1 var(--mono);padding:6px 9px;border-radius:8px;border:1px solid var(--line2);border-bottom-width:3px;background:#1a191e;color:var(--muted);transition:all .12s;white-space:nowrap}
+kbd.down{background:var(--accent);color:var(--ink);border-color:#b55f43;transform:translateY(2px);border-bottom-width:1px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;text-decoration:none;font:600 15.5px var(--sans);border-radius:12px;padding:0 20px;cursor:pointer;border:0;transition:transform .15s,background .15s,border-color .15s}
+.btn.primary{background:var(--accent);color:var(--ink)}
+.btn.primary:hover{background:#e3876a;transform:translateY(-1px)}
+.btn.ghost{background:none;color:var(--text);border:1px solid var(--line2)}
+.btn.ghost:hover{border-color:var(--text)}
+.for-phone{display:none!important}
+@media (pointer:coarse),(max-width:820px){.for-phone{display:inline-flex!important}.for-desk{display:none!important}}
 
-/* ---------- hero ---------- */
-.hero{position:relative;height:100svh;min-height:640px;overflow:hidden}
-#fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
-.top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:22px 28px;z-index:5}
+/* ---------- hero (phone first) ---------- */
+.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
 .top a.gh{font-size:14px;text-decoration:none;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:7px 14px}
-.top a.gh:hover{color:var(--text);border-color:var(--accent)}
+.hero{position:relative;padding-bottom:40px}
+.pitch{text-align:center;position:relative;z-index:4}
+h1{font:400 clamp(42px,11vw,76px)/1 var(--serif);letter-spacing:-.01em;margin:18px 0 14px;text-wrap:balance}
+h1 em{color:var(--accent)}
+.sub{color:#cdc9c2;font-size:17px;margin:0 auto;max-width:28em;text-wrap:balance}
+.ctas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.ctas .btn{flex:1 1 150px;max-width:230px}
 
-.app{position:absolute;width:min(300px,24vw);background:rgba(20,19,24,.82);border:1px solid var(--line);border-radius:14px;padding:12px 14px 14px;backdrop-filter:blur(6px);transition:border-color .35s,box-shadow .35s,opacity .35s;opacity:.55;z-index:2}
-.app.active{opacity:1;border-color:rgba(217,120,87,.7);box-shadow:0 0 0 6px rgba(217,120,87,.08),0 24px 60px -20px rgba(0,0,0,.9)}
+.scene{position:relative;height:250px;margin:30px auto 24px;max-width:420px}
+#fx{position:absolute;left:-20px;top:-40px;width:calc(100% + 40px);height:calc(100% + 80px);pointer-events:none;z-index:3}
+.island{position:absolute;left:50%;top:34px;transform:translate(-50%,-50%) scale(1.25);display:flex;align-items:center;gap:14px;height:40px;padding:0 20px 0 16px;border-radius:20px;background:#121214;border:1px solid #2b2a31;z-index:4;transition:opacity .35s,box-shadow .35s;opacity:.35}
+.island.on{opacity:1}.island.live{box-shadow:0 0 40px rgba(217,120,87,.28)}
+.bars{display:flex;gap:3px;align-items:center;height:24px}
+.bars i{width:3px;height:4px;border-radius:2px;background:var(--accent)}
+.island .label{font-weight:600;font-size:13px;color:#ededf2;min-width:94px}
+.app{position:absolute;left:0;right:0;bottom:0;background:rgba(20,19,24,.9);border:1px solid var(--line);border-radius:16px;padding:12px 14px 14px;transition:opacity .4s,border-color .35s,box-shadow .35s,transform .4s;z-index:2;opacity:0;transform:translateY(8px)}
+.app.show{opacity:1;transform:none}
+.app.active{border-color:rgba(217,120,87,.7);box-shadow:0 0 0 6px rgba(217,120,87,.08)}
 .app .chrome{display:flex;align-items:center;gap:6px;margin-bottom:10px;font:11.5px var(--mono);color:var(--faint)}
 .app .chrome i{width:8px;height:8px;border-radius:50%;background:var(--line2)}
 .app .chrome span{margin-left:6px}
-.app .input{min-height:38px;display:flex;align-items:center;border:1px solid var(--line2);border-radius:9px;padding:8px 10px;font-size:14px;background:#0e0d11;overflow:hidden;white-space:nowrap}
-.app.term .input{border:0;background:none;padding:2px 0;font-family:var(--mono);font-size:13px}
+.app .input{min-height:42px;display:flex;align-items:center;border:1px solid var(--line2);border-radius:10px;padding:8px 11px;font-size:15px;background:#0e0d11;overflow:hidden;white-space:nowrap}
+.app.term .input{border:0;background:none;padding:2px 0;font-family:var(--mono);font-size:13.5px}
 .app.term .input::before{content:"~ $ ";color:var(--ok);white-space:pre}
-.app .txt{color:var(--text)}
 .app .ph{color:var(--faint)}
-.app .caret{display:inline-block;width:2px;height:16px;background:var(--text);margin-left:1px;opacity:0}
+.app .caret{display:inline-block;width:2px;height:17px;background:var(--text);margin-left:1px;opacity:0}
 .app.active .caret{opacity:1;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-.a0{left:6%;top:15%;transform:rotate(-2deg)}
-.a1{right:6%;top:13%;transform:rotate(1.5deg)}
-.a2{left:8%;bottom:17%;transform:rotate(1.2deg)}
-.a3{right:7%;bottom:19%;transform:rotate(-1.6deg)}
+.flow{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;font:12.5px var(--mono);color:var(--faint);margin-top:22px}
 
-.island{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%) scale(1.5);display:flex;align-items:center;gap:14px;height:40px;padding:0 20px 0 16px;border-radius:20px;background:#121214;border:1px solid #2b2a31;z-index:4;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none;transition:box-shadow .3s}
-.island.live{box-shadow:0 0 40px rgba(217,120,87,.25)}
-.bars{display:flex;gap:3px;align-items:center;height:24px}
-.bars i{width:3px;height:4px;border-radius:2px;background:var(--accent)}
-.island .label{font-weight:600;font-size:13px;color:#ededf2;min-width:92px}
+/* desktop: the scene spreads across the screen, apps float around the island */
+@media (min-width:900px) and (pointer:fine){
+  .hero{height:100vh;min-height:680px;padding:0}
+  .hero .wrap{max-width:none;padding:0}
+  .hero .top{position:absolute;top:0;left:28px;right:28px;z-index:5}
+  .scene{position:absolute;inset:0;max-width:none;height:auto;margin:0}
+  #fx{left:0;top:0;width:100%;height:100%}
+  .island{top:30%;transform:translate(-50%,-50%) scale(1.5)}
+  .app{width:min(300px,23vw);bottom:auto;opacity:.5;transform:none}
+  .app.show{opacity:.5}.app.active{opacity:1}
+  .a0{left:6%;right:auto;top:14%;rotate:-2deg}.a1{right:6%;left:auto;top:12%;rotate:1.5deg}
+  .a2{left:7%;right:auto;top:auto;bottom:16%;rotate:1.2deg}.a3{right:7%;left:auto;top:auto;bottom:18%;rotate:-1.6deg}
+  .pitch{position:absolute;left:50%;transform:translateX(-50%);width:min(860px,90vw)}
+  .pitch.headline{top:30%;margin-top:58px}
+  .pitch h1{margin-top:0}
+  .pitch.cta-row{top:calc(30% + 225px)}
+  .flow{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:4;margin:0}
+}
 
-.pitch{position:absolute;left:50%;top:40%;transform:translate(-50%,64px);text-align:center;z-index:4;width:min(900px,92vw)}
-h1{font:400 clamp(38px,5.2vw,70px)/1.02 var(--serif);margin:0 0 14px;letter-spacing:-.01em;text-wrap:balance}
-h1 em{color:var(--accent)}
-.sub{color:var(--muted);font-size:17px;margin:0 0 26px}
-.sub code{font-family:var(--mono);font-size:.92em;color:var(--text)}
-.ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn{text-decoration:none;font-weight:600;font-size:15px;border-radius:10px;padding:12px 18px;transition:transform .15s,background .15s,border-color .15s}
-.btn.primary{background:var(--accent);color:var(--ink)}
-.btn.primary:hover{background:#e3876a;transform:translateY(-1px)}
-.btn.ghost{border:1px solid var(--line2)}
-.btn.ghost:hover{border-color:var(--text)}
-.hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);font:12.5px var(--mono);color:var(--faint);z-index:4;display:flex;gap:10px;align-items:center;white-space:nowrap}
-.hint kbd.down{background:var(--accent);color:var(--ink);border-color:#b55f43}
+/* ---------- sections ---------- */
+section{padding:72px 0;border-top:1px solid var(--line)}
+.kicker{font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+h2{font:400 clamp(34px,7vw,54px)/1.04 var(--serif);margin:0 0 28px;letter-spacing:-.005em;text-wrap:balance}
+h2 em{color:var(--accent)}
+.facts{display:grid;gap:12px}
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.fact b{display:block;font:400 30px/1.1 var(--serif);margin-bottom:6px}
+.fact b em{color:var(--accent)}
+.fact span{color:var(--muted);font-size:15px}
+.apps-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.apps-row i{font:normal 12px var(--mono);color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:4px 10px}
+@media (min-width:760px){.facts{grid-template-columns:repeat(3,1fr)}}
 
-/* ---------- 33 ms ---------- */
-.trick{position:relative;padding:130px 24px;text-align:center;border-top:1px solid var(--line);overflow:hidden}
-.trick .big{font:400 clamp(120px,22vw,280px)/.9 var(--serif);letter-spacing:-.03em;margin:0 auto;max-width:none;color:var(--text)}
-.trick .big em{color:var(--accent);font-style:italic}
-.spacebar{margin:26px auto 0;width:min(420px,80vw);height:54px;border-radius:12px;border:1px solid #b55f43;border-bottom-width:2px;background:var(--accent);transform:translateY(3px);box-shadow:0 0 50px rgba(217,120,87,.25);position:relative}
-.spacebar::after{content:"held for you";position:absolute;inset:0;display:grid;place-items:center;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
-.tape{margin:24px auto 0;width:min(720px,92vw);height:22px;overflow:hidden;font:14px/22px var(--mono);color:#4a4640;white-space:nowrap;-webkit-mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent);mask:linear-gradient(90deg,transparent,#000 15%,#000 85%,transparent)}
-.tape span{color:var(--accent)}
-.trick p{color:var(--muted);font-size:17px;max-width:30em;margin:30px auto 0}
-.trick p code{font-family:var(--mono);color:var(--text);font-size:.92em}
+.steps{display:grid;gap:12px;counter-reset:s}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;display:grid;grid-template-columns:auto 1fr;gap:4px 16px;align-items:center}
+.step::before{counter-increment:s;content:counter(s);grid-row:span 2;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:600 14px var(--mono);color:var(--ink);background:var(--accent)}
+.step h3{margin:0;font-size:18px}
+.step p{margin:0;color:var(--muted);font-size:15px}
+@media (min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}.step{grid-template-columns:1fr}.step::before{grid-row:auto;margin-bottom:6px}}
 
-/* ---------- proof ---------- */
-.proof{padding:40px 24px 110px;display:grid;place-items:center}
-.proof figure{margin:0;width:min(920px,100%)}
-.proof img{display:block;width:100%;height:auto;border-radius:16px;border:1px solid var(--line)}
-.proof figcaption{font:13px var(--mono);color:var(--faint);margin-top:12px;text-align:center}
+.states-title{margin:44px 0 14px;font:500 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.states{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 20px 8px;margin:0 -20px;scrollbar-width:none}
+.states::-webkit-scrollbar{display:none}
+.state{flex:0 0 min(260px,78%);scroll-snap-align:start;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 18px 18px;display:grid;justify-items:center;gap:14px;text-align:center}
+.mini{display:flex;align-items:center;gap:12px;height:36px;padding:0 16px 0 14px;border-radius:18px;background:#121214;border:1px solid #2b2a31;font-weight:600;font-size:12.5px;color:#ededf2;white-space:nowrap}
+.mini .bars{height:20px}
+.mini.done::before{content:"✓";color:var(--ok);font-weight:800}
+.mini.err{color:var(--err)}.mini.err .bars i{background:var(--err)}
+.state p{margin:0;color:var(--muted);font-size:14px}
+@media (min-width:900px){.states{display:grid;grid-template-columns:repeat(4,1fr);overflow:visible;margin:0;padding:0}.state{flex:none}}
+.again{margin-top:30px;display:flex;justify-content:center}
 
-/* ---------- install ---------- */
-.install{padding:110px 24px 120px;border-top:1px solid var(--line);display:grid;place-items:center;text-align:center}
-.install h2{font:400 clamp(38px,5vw,60px)/1 var(--serif);margin:0 0 30px}
-.install h2 em{color:var(--accent)}
-.cmd{display:flex;align-items:center;gap:14px;background:#0a0a0c;border:1px solid var(--line);border-radius:14px;padding:14px 14px 14px 20px;width:min(600px,100%);min-width:0}
-.install>*{max-width:100%}
-.cmd pre{margin:0;font:14.5px/1.7 var(--mono);color:#d6d2cb;text-align:left;overflow-x:auto;min-width:0}
+.install{text-align:center}
+.cmd{margin:0 auto;max-width:620px;text-align:left;background:#0a0a0c;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.cmd .head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px 8px 16px;border-bottom:1px solid var(--line);font:12px var(--mono);color:var(--faint)}
+.cmd pre{margin:0;padding:16px;font:13.5px/1.75 var(--mono);color:#d6d2cb;overflow-x:auto}
 .cmd pre b{color:var(--faint);font-weight:400;user-select:none}
-.copy{font:600 12px var(--mono);background:var(--panel);color:var(--muted);border:1px solid var(--line2);border-radius:8px;padding:8px 11px;cursor:pointer;align-self:flex-start;flex:none}
+.copy{font:600 12px var(--mono);background:var(--panel);color:var(--muted);border:1px solid var(--line2);border-radius:8px;padding:8px 11px;cursor:pointer}
 .copy:hover{color:var(--text);border-color:var(--accent)}
-.then{margin:22px 0 0;color:var(--muted);font-size:16px}
-.fine{margin:10px 0 0;font:12.5px var(--mono);color:var(--faint)}
+.then{margin:20px 0 0;color:#cdc9c2;font-size:16px}
+.fine{margin:10px 0 0;font:12px/1.6 var(--mono);color:var(--faint)}
+.install .ctas{margin-top:26px}
 
-footer{border-top:1px solid var(--line);padding:30px 28px 40px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;font-size:14px;color:var(--faint)}
-footer nav{display:flex;gap:20px;flex-wrap:wrap}
+footer{border-top:1px solid var(--line);padding:28px 0 40px}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--faint)}
+footer nav{display:flex;gap:18px;flex-wrap:wrap}
 footer a{text-decoration:none;color:var(--muted)}
-footer a:hover{color:var(--text)}
-
-@media (max-width:820px){
-  .app{width:44vw}
-  .a0{left:4%;top:11%}.a1{right:4%;top:17%}.a2{left:4%;bottom:7%}.a3{right:4%;bottom:13%}
-  .island{top:44%;transform:translate(-50%,-50%) scale(1.25)}
-  .pitch{top:44%;transform:translate(-50%,46px)}
-  .sub{font-size:15.5px;margin-bottom:18px}
-  .hint{display:none}
-  .a2,.a3{opacity:.4}
-}
-@media (max-width:520px){
-  .hero{min-height:720px}
-  .a3{display:none}
-  .app{width:44vw;padding:9px 10px 10px}
-  .a0{left:4%;top:12%}.a1{right:4%;top:12%}
-  .a2{left:8%;right:8%;width:auto;bottom:8%;opacity:.55}
-  .app .input{font-size:12.5px;min-height:32px}
-  .cmd pre{font-size:12.5px}
-}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;background:var(--text);color:var(--bg);font-weight:600;font-size:14px;padding:10px 16px;border-radius:10px;transition:all .25s;z-index:20;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 
 <header class="hero" id="hero">
-  <canvas id="fx" aria-hidden="true"></canvas>
-  <div class="top">
-    <a class="wordmark" href="./">just<b>yap</b></a>
-    <a class="gh" href="https://github.com/HemanthGangula/justyap">GitHub ↗</a>
-  </div>
-
-  <div class="app a0" data-text="linux voice typing"><div class="chrome"><i></i><i></i><i></i><span>browser</span></div><div class="input"><span class="txt"></span><span class="caret"></span><span class="ph">Search</span></div></div>
-  <div class="app a1" data-text="ship the landing page tonight"><div class="chrome"><i></i><i></i><i></i><span>notes.md</span></div><div class="input"><span class="txt"></span><span class="caret"></span><span class="ph">Start writing</span></div></div>
-  <div class="app a2 term" data-text="git push origin main"><div class="chrome"><i></i><i></i><i></i><span>terminal</span></div><div class="input"><span class="txt"></span><span class="caret"></span></div></div>
-  <div class="app a3" data-text="on my way, five minutes"><div class="chrome"><i></i><i></i><i></i><span># general</span></div><div class="input"><span class="txt"></span><span class="caret"></span><span class="ph">Message</span></div></div>
-
-  <div class="island" id="island" role="button" tabindex="0" aria-label="Hold to try: the justyap island">
-    <div class="bars" id="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <span class="label" id="label">Hold space</span>
-  </div>
-
-  <div class="pitch">
-    <h1>Voice typing for <em>every</em> Linux app.</h1>
-    <p class="sub">Claude Code's <code>/voice</code>, everywhere you type.</p>
-    <div class="ctas">
-      <a class="btn primary" href="#install">Install</a>
-      <a class="btn ghost" href="https://github.com/HemanthGangula/justyap">Source</a>
+  <div class="wrap">
+    <div class="top">
+      <a class="wordmark" href="./">just<b>yap</b><small>for linux</small></a>
+      <a class="gh" href="https://github.com/HemanthGangula/justyap">GitHub ↗</a>
     </div>
+
+    <div class="pitch headline">
+      <h1>Voice typing for <em>every</em> Linux app.</h1>
+      <p class="sub">Press your hotkey, talk, press Enter. The text lands wherever your cursor is.</p>
+    </div>
+
+    <div class="scene" id="scene" aria-label="Animation: your hotkey, the island listens, Enter, and the sentence is pasted into a browser, notes, a terminal and a chat">
+      <canvas id="fx" aria-hidden="true"></canvas>
+      <div class="island" id="island" aria-hidden="true">
+        <div class="bars" id="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <span class="label" id="label">Listening</span>
+      </div>
+      <div class="app a0" data-text="voice typing for linux"><div class="chrome"><i></i><i></i><i></i><span>browser</span></div><div class="input"><span class="txt"></span><span class="caret"></span><span class="ph">Search</span></div></div>
+      <div class="app a1" data-text="call the client after lunch"><div class="chrome"><i></i><i></i><i></i><span>notes</span></div><div class="input"><span class="txt"></span><span class="caret"></span><span class="ph">Start writing</span></div></div>
+      <div class="app a2 term" data-text="git push origin main"><div class="chrome"><i></i><i></i><i></i><span>terminal</span></div><div class="input"><span class="txt"></span><span class="caret"></span></div></div>
+      <div class="app a3" data-text="on my way, five minutes"><div class="chrome"><i></i><i></i><i></i><span>chat</span></div><div class="input"><span class="txt"></span><span class="caret"></span><span class="ph">Message</span></div></div>
+    </div>
+
+    <div class="pitch cta-row">
+      <div class="ctas">
+        <a class="btn primary for-desk" href="#install">Install</a>
+        <button class="btn primary for-phone send" type="button">Send to laptop</button>
+        <a class="btn ghost" href="https://github.com/HemanthGangula/justyap">Read the code</a>
+      </div>
+    </div>
+    <div class="flow" aria-hidden="true"><kbd id="kHot">your hotkey</kbd><span>talk</span><kbd id="kEnter">Enter</kbd><span>pasted</span></div>
   </div>
-  <div class="hint">hold <kbd id="hintkey">space</kbd> to talk</div>
 </header>
 
-<section class="trick" id="trick">
-  <p class="big">33<em>ms</em></p>
-  <div class="spacebar" aria-hidden="true"></div>
-  <div class="tape" id="tape" aria-hidden="true"></div>
-  <p><code>/voice</code> listens while Space is held. Nobody is holding it, so justyap sends one space every 33 ms into a terminal you never see.</p>
+<section id="why">
+  <div class="wrap">
+    <p class="kicker">Why justyap</p>
+    <h2>Uses what you <em>already</em> have.</h2>
+    <div class="facts">
+      <div class="fact"><b>Every <em>app</em></b><span>If it takes text, you can talk into it. Wayland and X11.</span>
+        <div class="apps-row"><i>browser</i><i>chat</i><i>editor</i><i>terminal</i><i>docs</i><i>email</i></div></div>
+      <div class="fact"><b>No model, no <em>API key</em></b><span>It uses the voice already in Claude Code, on the Claude plan you pay for.</span></div>
+      <div class="fact"><b>Zero Python <em>packages</em></b><span>Standard library only. Open source, MIT.</span></div>
+    </div>
+  </div>
 </section>
 
-<section class="proof">
-  <figure>
-    <img src="demo.gif" width="960" height="540" loading="lazy" decoding="async" alt="Screen recording of justyap on Ubuntu: press the shortcut, speak, and the text is pasted into a WhatsApp chat">
-    <figcaption>The real app on Ubuntu 24.04, GNOME on Wayland.</figcaption>
-  </figure>
+<section id="use">
+  <div class="wrap">
+    <p class="kicker">How you use it</p>
+    <h2>Press, talk, Enter. <em>That's it.</em></h2>
+    <div class="steps">
+      <div class="step"><h3>Press your hotkey</h3><p>Any free key you like. You pick it once at setup.</p></div>
+      <div class="step"><h3>Talk</h3><p>An island at the bottom of your screen moves with your voice.</p></div>
+      <div class="step"><h3>Press Enter</h3><p>The text is pasted at your cursor. Esc cancels.</p></div>
+    </div>
+
+    <p class="states-title">The island tells you what's happening</p>
+    <div class="states">
+      <div class="state"><div class="mini"><div class="bars live"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>Listening</div><p>The bars follow your microphone.</p></div>
+      <div class="state"><div class="mini"><div class="bars wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>Transcribing…</div><p>Turning speech into text.</p></div>
+      <div class="state"><div class="mini done">Copied to clipboard</div><p>No text box focused? It waits for Ctrl+V.</p></div>
+      <div class="state"><div class="mini err">No speech detected.</div><p>If something fails, it says why.</p></div>
+    </div>
+    <div class="again">
+      <a class="btn primary for-desk" href="#install">Install</a>
+      <button class="btn primary for-phone send" type="button">Send to laptop</button>
+    </div>
+  </div>
 </section>
 
 <section class="install" id="install">
-  <h2>Yap in a <em>minute</em>.</h2>
-  <div class="cmd">
+  <div class="wrap">
+    <p class="kicker">Install</p>
+    <h2>Two commands. <em>Then just talk.</em></h2>
+    <div class="cmd">
+      <div class="head"><span>terminal</span><button class="copy" id="copy" type="button">Copy</button></div>
 <pre><b>$ </b>git clone https://github.com/HemanthGangula/justyap
 <b>$ </b>cd justyap && ./install.sh</pre>
-    <button class="copy" id="copy" type="button">Copy</button>
+    </div>
+    <p class="then">Then pick any free hotkey. Press it, talk, press Enter.</p>
+    <p class="fine">Tested on Ubuntu 24.04 (GNOME, Wayland) · needs Claude Code on a paid Claude plan · not affiliated with Anthropic</p>
+    <div class="ctas">
+      <button class="btn primary for-phone send" type="button">Send to laptop</button>
+      <a class="btn ghost" href="https://github.com/HemanthGangula/justyap">Read the code</a>
+    </div>
   </div>
-  <p class="then">Pick any free hotkey. Press it, talk, press Enter.</p>
-  <p class="fine">Needs Claude Code on a paid Claude plan · MIT · not affiliated with Anthropic</p>
 </section>
 
 <footer>
-  <a class="wordmark" href="./">just<b>yap</b></a>
-  <nav>
-    <a href="https://github.com/HemanthGangula/justyap">GitHub</a>
-    <a href="https://github.com/HemanthGangula/justyap/releases">Releases</a>
-    <a href="https://x.com/hemanthgangula_">X</a>
-    <a href="https://mastodon.social/@hemanth_g" rel="me">Mastodon</a>
-  </nav>
-  <span>Built by Hemanth</span>
+  <div class="wrap">
+    <a class="wordmark" href="./">just<b>yap</b></a>
+    <nav>
+      <a href="https://github.com/HemanthGangula/justyap">GitHub</a>
+      <a href="https://github.com/HemanthGangula/justyap/releases">Releases</a>
+      <a href="https://x.com/hemanthgangula_">X</a>
+      <a href="https://mastodon.social/@hemanth_g" rel="me">Mastodon</a>
+    </nav>
+    <span>Built by Hemanth · MIT</span>
+  </div>
 </footer>
+<div class="toast" id="toast" role="status"></div>
 
 <script>
 (() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const hero = document.getElementById('hero'), canvas = document.getElementById('fx'), ctx = canvas.getContext('2d');
-  const island = document.getElementById('island'), label = document.getElementById('label'), hintkey = document.getElementById('hintkey');
-  const bars = [...document.getElementById('bars').children];
-  const apps = [...document.querySelectorAll('.app')];
+  const $ = id => document.getElementById(id);
+  const scene = $('scene'), canvas = $('fx'), ctx = canvas.getContext('2d');
+  const island = $('island'), label = $('label'), kHot = $('kHot'), kEnter = $('kEnter');
+  const bars = [...$('bars').children], apps = [...scene.querySelectorAll('.app')];
   const SHAPE = [0.45, 0.7, 0.9, 1.0, 0.9, 0.7, 0.45]; // same as overlay.py
   const heights = SHAPE.map(() => 0);
-  let mode = 'idle', level = 0, frame = 0, turn = 0;
-  let rings = [], letters = [], W = 0, H = 0;
+  let mode = 'idle', level = 0, frame = 0, turn = 0, rings = [], flights = [], W = 0, H = 0;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const wide = () => matchMedia('(min-width:900px) and (pointer:fine)').matches;
 
   const resize = () => {
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    W = hero.clientWidth; H = hero.clientHeight;
-    canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const dpr = Math.min(devicePixelRatio || 1, 2), r = canvas.getBoundingClientRect();
+    W = r.width; H = r.height; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
   addEventListener('resize', resize); resize();
-
-  const rel = el => { const r = el.getBoundingClientRect(), h = hero.getBoundingClientRect(); return { x: r.left - h.left, y: r.top - h.top, w: r.width, h: r.height }; };
-  const shown = () => apps.filter(a => getComputedStyle(a).display !== 'none');
+  const rel = el => { const r = el.getBoundingClientRect(), c = canvas.getBoundingClientRect(); return { x: r.left - c.left, y: r.top - c.top, w: r.width, h: r.height }; };
+  const tap = async key => { key.classList.add('down'); await sleep(240); key.classList.remove('down'); };
 
   function setMode(m) {
     mode = m;
+    island.classList.toggle('on', m !== 'idle');
     island.classList.toggle('live', m === 'listening');
-    label.textContent = m === 'listening' ? 'Listening' : m === 'processing' ? 'Transcribing…' : 'Hold space';
+    if (m === 'listening') label.textContent = 'Listening';
+    if (m === 'processing') label.textContent = 'Transcribing…';
   }
 
-  // the transcript leaves the island letter by letter and lands at the app's cursor
-  function paste(app) {
-    const txt = app.querySelector('.txt'), ph = app.querySelector('.ph'), caret = app.querySelector('.caret');
-    apps.forEach(a => a.classList.toggle('active', a === app));
-    txt.textContent = ''; if (ph) ph.hidden = true;
-    const from = rel(island), sx = from.x + from.w / 2, sy = from.y + from.h / 2;
-    [...app.dataset.text].forEach((ch, i) => letters.push({ ch, i, t: -i * 0.035, sx: sx + (Math.random() - .5) * 40, sy: sy + (Math.random() - .5) * 14, txt, caret, done: false }));
-  }
-  function clear(app) {
-    const ph = app.querySelector('.ph'), txt = app.querySelector('.txt');
-    letters = letters.filter(L => L.txt !== txt);
+  // the real flow: your hotkey, talk, Enter, and the whole transcript is pasted at the cursor
+  async function round() {
+    const app = apps[turn++ % apps.length], txt = app.querySelector('.txt'), ph = app.querySelector('.ph');
+    apps.forEach(a => { a.classList.toggle('active', a === app); a.classList.toggle('show', wide() || a === app); });
+    await sleep(500);
+    await tap(kHot);
+    setMode('listening'); await sleep(2400);
+    await tap(kEnter);
+    setMode('processing'); await sleep(800);
+    setMode('idle');
+    const from = rel(island);
+    await new Promise(done => flights.push({ text: app.dataset.text, t: 0, sx: from.x + from.w / 2, sy: from.y + from.h / 2, caret: app.querySelector('.caret'), done }));
+    if (ph) ph.hidden = true; txt.textContent = app.dataset.text;
+    await sleep(2200);
     txt.textContent = ''; if (ph) ph.hidden = false; app.classList.remove('active');
   }
-  // one run at a time: a newer run (a visitor holding space) cancels the one in progress
-  let run = 0, held = 0;
-  const alive = id => id === run;
-  async function deliver(id, processMs) {
-    setMode('processing'); await sleep(processMs);
-    if (!alive(id)) return;
-    setMode('idle');
-    const list = shown(), app = list[turn++ % list.length], txt = app.querySelector('.txt');
-    paste(app);
-    while (alive(id) && letters.some(L => L.txt === txt)) await sleep(100); // every letter has landed
-    await sleep(1800);
-    if (alive(id)) clear(app);
-  }
-  async function autoplay() {
-    const id = ++run;
-    setMode('listening'); await sleep(2300);
-    if (alive(id)) await deliver(id, 700);
-  }
-
-  // hold space, or press and hold the island, to try it
-  const down = () => {
-    if (held) return;
-    run++; letters = []; apps.forEach(clear);
-    held = performance.now(); setMode('listening'); hintkey.classList.add('down');
-  };
-  const up = () => {
-    hintkey.classList.remove('down');
-    if (!held) return;
-    const long = performance.now() - held, id = ++run; held = 0;
-    if (long < 250) setMode('idle'); else deliver(id, 600);
-  };
-  const heroOnScreen = () => hero.getBoundingClientRect().bottom > innerHeight * 0.4;
-  addEventListener('keydown', e => {
-    if (e.code !== 'Space' || !heroOnScreen() || /INPUT|TEXTAREA|BUTTON|^A$/.test(document.activeElement.tagName)) return;
-    e.preventDefault();
-    if (!e.repeat) down();
-  });
-  addEventListener('keyup', e => { if (e.code === 'Space') up(); });
-  island.addEventListener('pointerdown', e => { e.preventDefault(); down(); });
-  addEventListener('pointerup', up);
-  addEventListener('blur', up);
 
   if (reduce) {
-    const app = shown()[0]; app.querySelector('.txt').textContent = app.dataset.text; app.querySelector('.ph').hidden = true; app.classList.add('active');
+    const app = apps[0]; app.classList.add('show', 'active'); app.querySelector('.txt').textContent = app.dataset.text; app.querySelector('.ph').hidden = true;
     return;
   }
-
-  (async function loop() {
-    await sleep(1200);
-    while (true) {
-      const quiet = !held && mode === 'idle' && !apps.some(a => a.classList.contains('active'));
-      if (quiet && heroOnScreen() && !document.hidden) await autoplay();
-      await sleep(1300);
-    }
-  })();
+  const onScreen = () => { const r = scene.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && !document.hidden; };
+  (async () => { while (true) { if (onScreen()) await round(); else await sleep(400); } })();
 
   const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   let last = performance.now();
@@ -309,69 +318,79 @@ footer a:hover{color:var(--text)}
     ctx.clearRect(0, 0, W, H);
     const isl = rel(island), cx = isl.x + isl.w / 2, cy = isl.y + isl.h / 2;
 
-    // the island's bars, eased like overlay.py
     if (mode === 'listening') level += ((Math.random() < 0.15 ? 0.15 : 0.55 + Math.random() * 0.45) - level) * 0.25;
     else level *= 0.9;
     bars.forEach((b, i) => {
       const target = mode === 'processing' ? 0.25 + 0.2 * Math.sin(frame / 7 + i * 0.9)
-        : mode === 'listening' ? level * SHAPE[i] * (0.75 + 0.25 * Math.sin(frame / 5 + i * 1.7))
-        : 0.12 + 0.05 * Math.sin(frame / 40 + i);
+        : mode === 'listening' ? level * SHAPE[i] * (0.75 + 0.25 * Math.sin(frame / 5 + i * 1.7)) : 0.1;
       heights[i] += (target - heights[i]) * 0.3;
       b.style.height = (4 + heights[i] * 20).toFixed(1) + 'px';
     });
 
-    // sound leaving the island: pill-shaped ripples that grow with the voice
+    // your voice leaving the island: ripples that grow with the level
     if (mode === 'listening' && frame % 10 === 0) rings.push({ r: 0, a: 0.3 + level * 0.35 });
     rings = rings.filter(g => g.a > 0.01);
     for (const g of rings) {
-      g.r += 70 * dt * (1 + level); g.a *= 0.95;
+      g.r += 60 * dt * (1 + level); g.a *= 0.95;
       const w = isl.w + g.r * 2.2, h = isl.h + g.r * 1.1;
       ctx.strokeStyle = `rgba(217,120,87,${g.a})`; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.roundRect(cx - w / 2, cy - h / 2, w, h, h / 2); ctx.stroke();
     }
     if (mode !== 'idle') {
-      const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, 260);
+      const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, 220);
       glow.addColorStop(0, `rgba(217,120,87,${0.10 + level * 0.12})`); glow.addColorStop(1, 'rgba(217,120,87,0)');
-      ctx.fillStyle = glow; ctx.fillRect(cx - 260, cy - 260, 520, 520);
+      ctx.fillStyle = glow; ctx.fillRect(cx - 220, cy - 220, 440, 440);
     }
 
-    ctx.font = '600 15px "JetBrains Mono", monospace'; ctx.textBaseline = 'middle';
-    for (const L of letters) {
-      L.t += dt / 0.9;
-      if (L.t < 0) continue;
-      if (L.t >= 1) { L.done = true; L.txt.textContent += L.ch; continue; }
-      const c = rel(L.caret), ex = c.x + 4, ey = c.y + c.h / 2;
-      const k = ease(L.t), mx = (L.sx + ex) / 2, my = Math.min(L.sy, ey) - 90 - (L.i % 5) * 8;
-      const x = (1 - k) * (1 - k) * L.sx + 2 * (1 - k) * k * mx + k * k * ex;
-      const y = (1 - k) * (1 - k) * L.sy + 2 * (1 - k) * k * my + k * k * ey;
-      ctx.fillStyle = `rgba(217,120,87,${0.3 + 0.7 * Math.sin(Math.PI * Math.min(L.t * 1.2, 1))})`;
-      ctx.shadowColor = 'rgba(217,120,87,.8)'; ctx.shadowBlur = 12;
-      ctx.fillText(L.ch, x, y);
-      ctx.shadowBlur = 0;
+    // the transcript travels as one piece, because justyap pastes it in one go
+    ctx.font = '600 14px Inter, sans-serif'; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+    for (const F of flights) {
+      F.t += dt / 0.8;
+      const c = rel(F.caret), ex = c.x, ey = c.y + c.h / 2;
+      const k = ease(Math.min(F.t, 1)), mx = (F.sx + ex) / 2, my = Math.min(F.sy, ey) - 60;
+      const x = (1 - k) * (1 - k) * F.sx + 2 * (1 - k) * k * mx + k * k * ex;
+      const y = (1 - k) * (1 - k) * F.sy + 2 * (1 - k) * k * my + k * k * ey;
+      const w = ctx.measureText(F.text).width + 24, s = 0.8 + 0.2 * k;
+      ctx.save(); ctx.translate(x + (w / 2) * k, y); ctx.scale(s, s);
+      ctx.shadowColor = 'rgba(217,120,87,.7)'; ctx.shadowBlur = 18;
+      ctx.fillStyle = 'rgba(217,120,87,.95)'; ctx.beginPath(); ctx.roundRect(-w / 2, -15, w, 30, 15); ctx.fill();
+      ctx.shadowBlur = 0; ctx.fillStyle = '#1a0f0a'; ctx.fillText(F.text, 0, 1);
+      ctx.restore();
+      if (F.t >= 1) { F.finished = true; F.done(); }
     }
-    letters = letters.filter(L => !L.done);
+    flights = flights.filter(F => !F.finished);
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
 })();
 
-// one space every 33 ms, like the daemon
+// the island state cards: live bars and a wave, like the real island
 (() => {
-  const tape = document.getElementById('tape');
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { tape.textContent = '␣'.repeat(80); return; }
-  let buf = '', timer = null;
-  const tick = () => { buf = (buf + '␣').slice(-90); tape.innerHTML = buf.slice(0, -1) + '<span>␣</span>'; };
-  new IntersectionObserver(([e]) => {
-    if (e.isIntersecting && !timer) timer = setInterval(tick, 33);
-    else if (!e.isIntersecting && timer) { clearInterval(timer); timer = null; }
-  }).observe(tape);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const SHAPE = [0.45, 0.7, 0.9, 1.0, 0.9, 0.7, 0.45];
+  const live = [...document.querySelectorAll('.states .live i')], wave = [...document.querySelectorAll('.states .wave i')];
+  let f = 0, level = 0.5;
+  setInterval(() => {
+    f++; level += ((Math.random() < 0.15 ? 0.15 : 0.55 + Math.random() * 0.45) - level) * 0.25;
+    live.forEach((b, i) => b.style.height = (4 + level * SHAPE[i] * (0.75 + 0.25 * Math.sin(f / 3 + i * 1.7)) * 16).toFixed(1) + 'px');
+    wave.forEach((b, i) => b.style.height = (4 + (0.25 + 0.2 * Math.sin(f / 4 + i * 0.9)) * 16).toFixed(1) + 'px');
+  }, 50);
 })();
 
-document.getElementById('copy').addEventListener('click', async e => {
-  try { await navigator.clipboard.writeText('git clone https://github.com/HemanthGangula/justyap\ncd justyap && ./install.sh'); e.target.textContent = 'Copied'; }
-  catch { e.target.textContent = 'Select it'; }
-  setTimeout(() => e.target.textContent = 'Copy', 1600);
-});
+// phones can't install a Linux tool, so send the page to the laptop instead
+(() => {
+  const toast = msg => { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 1800); };
+  const url = 'https://hemanthgangula.github.io/justyap/';
+  document.querySelectorAll('.send').forEach(b => b.addEventListener('click', async () => {
+    if (navigator.share) { try { await navigator.share({ title: 'justyap for Linux', text: 'Voice typing for every Linux app', url }); } catch {} return; }
+    try { await navigator.clipboard.writeText(url); toast('Link copied. Open it on your laptop.'); } catch { toast(url); }
+  }));
+  document.getElementById('copy').addEventListener('click', async e => {
+    try { await navigator.clipboard.writeText('git clone https://github.com/HemanthGangula/justyap\ncd justyap && ./install.sh'); e.target.textContent = 'Copied'; }
+    catch { e.target.textContent = 'Select it'; }
+    setTimeout(() => e.target.textContent = 'Copy', 1600);
+  });
+})();
 </script>
 </body>
 </html>
