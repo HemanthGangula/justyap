@@ -10,6 +10,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+from justyap import __main__ as cli
 from justyap import keyboard
 from justyap.daemon import LISTEN_TIMEOUT, mic_level
 
@@ -69,6 +70,31 @@ class KeyboardTest(unittest.TestCase):
         types.write_text("image/png\n")
         keyboard.paste("hello again", "ctrl+v", restore=True)
         self.assertEqual(clip.read_text(), "hello again")
+
+
+class PasteChoiceTest(unittest.TestCase):
+    def test_terminals_get_ctrl_shift_v_and_only_sure_pastes_restore(self):
+        cases = {  # island's answer, user's paste keys -> keys pressed, clipboard restored
+            ("paste", "ctrl+v"): ("ctrl+v", True),
+            ("terminal", "ctrl+v"): ("ctrl+shift+v", True),
+            ("terminal", "shift+insert"): ("shift+insert", True),  # the user's own choice wins
+            ("try", "ctrl+v"): ("ctrl+v", False),
+        }
+        for (focus, keys), expected in cases.items():
+            with (
+                mock.patch.object(cli, "ask_daemon", return_value={"text": "hi", "paste": focus}),
+                mock.patch.object(keyboard, "paste") as paste,
+            ):
+                self.assertEqual(cli.dictate("toggle", keys), 0)
+                paste.assert_called_once_with("hi", expected[0], restore=expected[1])
+        with (
+            mock.patch.object(cli, "ask_daemon", return_value={"text": "hi", "paste": "copy"}),
+            mock.patch.object(keyboard, "paste") as paste,
+            mock.patch.object(keyboard, "copy_to_clipboard") as copy,
+        ):
+            cli.dictate("toggle", "ctrl+v")
+            paste.assert_not_called()
+            copy.assert_called_once_with("hi")
 
 
 class MicLevelTest(unittest.TestCase):

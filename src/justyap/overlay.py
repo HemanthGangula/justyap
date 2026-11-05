@@ -43,8 +43,11 @@ TICK_WIDTH = 18  # the tick drawn before DONE_TEXT, including the gap
 A11Y_TIMEOUT_MS = 300
 
 
-def focus_takes_text() -> bool | None:
-    """Whether the focused element takes text, or None when the accessibility bus can't tell."""
+def focus_kind() -> str | None:
+    """What has focus: `terminal`, `text` (a text field) or `other`, or None when the accessibility bus can't tell.
+
+    Some apps leave a window marked active after you switch away (Brave does), so every active
+    window with a focused element is checked, and they have to agree."""
     if Atspi is None:
         return None
     Atspi.set_timeout(A11Y_TIMEOUT_MS, A11Y_TIMEOUT_MS)
@@ -59,6 +62,7 @@ def focus_takes_text() -> bool | None:
         Atspi.CollectionMatchType.ALL,
         False,
     )
+    kinds = set()
     try:
         desktop = Atspi.get_desktop(0)
         for app in (desktop.get_child_at_index(i) for i in range(desktop.get_child_count())):
@@ -67,21 +71,23 @@ def focus_takes_text() -> bool | None:
                     continue
                 collection = window.get_collection_iface()
                 matches = collection.get_matches(focused, Atspi.CollectionSortOrder.CANONICAL, 1, True) if collection else []
-                if not matches:
-                    return None
-                target = matches[0]
-                return target.get_state_set().contains(Atspi.StateType.EDITABLE) or target.get_role() == Atspi.Role.TERMINAL
+                if matches:
+                    target = matches[0]
+                    if target.get_role() == Atspi.Role.TERMINAL:
+                        kinds.add("terminal")
+                    else:
+                        kinds.add("text" if target.get_state_set().contains(Atspi.StateType.EDITABLE) else "other")
     except GLib.Error:
-        pass
-    return None
+        return None
+    return kinds.pop() if len(kinds) == 1 else None
 
 
-def answer(takes_text: bool | None) -> bool:
-    """Tell the daemon on stdout: `paste` (sure it lands), `try` (can't tell) or `copy` (nowhere to type).
+def answer(kind: str | None) -> bool:
+    """Tell the daemon on stdout: `paste` (a text field), `terminal`, `try` (can't tell) or `copy` (nowhere to type).
 
     Returns whether to paste, so "Copied to clipboard" only shows when it's sure the paste had nowhere to go."""
-    print({True: "paste", None: "try", False: "copy"}[takes_text], flush=True)
-    return takes_text is not False
+    print({"text": "paste", "terminal": "terminal", None: "try", "other": "copy"}[kind], flush=True)
+    return kind != "other"
 
 
 FONT_SIZE = 13
@@ -133,7 +139,7 @@ class Island(Gtk.Window):
                 self.level = float(value)
             elif command in LABELS:
                 self.state = command
-            elif command == "done" and answer(focus_takes_text()):
+            elif command == "done" and answer(focus_kind()):
                 continue
             elif command in MESSAGES:
                 self.state, self.message = command, value or DONE_TEXT

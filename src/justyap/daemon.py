@@ -41,7 +41,7 @@ SETTLE_MIN = 0.3
 SETTLE_IDLE = 0.4
 SETTLE_TIMEOUT = 15.0
 GRAB_TIMEOUT = 5.0
-OVERLAY_ANSWER_TIMEOUT = 1.0  # overlay.focus_takes_text gives up on a slow accessibility bus after 0.3 s per call
+OVERLAY_ANSWER_TIMEOUT = 1.0  # overlay.focus_kind gives up on a slow accessibility bus after 0.3 s per call
 RESPAWN_DELAY = 2.0
 SCREEN_LIMIT = 16_384
 
@@ -199,7 +199,7 @@ class Overlay:
             self.hide()
 
     def done(self) -> str:
-        """Show the done state and return the island's answer: `paste`, `try` or `copy` (see overlay.answer)."""
+        """Show the done state and return the island's answer: `paste`, `terminal`, `try` or `copy` (see overlay.answer)."""
         self.send("done")
         if not self.process or not select.select([self.process.stdout], [], [], OVERLAY_ANSWER_TIMEOUT)[0]:
             return "try"

@@ -13,6 +13,7 @@ from . import SOCKET_PATH, __version__, daemon, keyboard, service
 
 DEFAULT_HOTKEY = "<Super><Alt>h"
 DEFAULT_PASTE_KEYS = "ctrl+v"
+TERMINAL_PASTE_KEYS = "ctrl+shift+v"  # terminals ignore Ctrl+V, and bash treats it as "type the next key literally"
 REQUEST_TIMEOUT = daemon.SETTLE_TIMEOUT + daemon.GRAB_TIMEOUT + 5
 
 
@@ -50,11 +51,14 @@ def dictate(command: str, paste_keys: str) -> int:
         return 1
     if "text" not in reply:  # started listening, or there was nothing to stop
         return 0
+    focus = reply.get("paste")
+    if focus == "terminal" and paste_keys == DEFAULT_PASTE_KEYS:
+        paste_keys = TERMINAL_PASTE_KEYS
     try:
-        if reply.get("paste") == "copy":  # nowhere to type: the text waits on the clipboard for Ctrl+V
+        if focus == "copy":  # nowhere to type: the text waits on the clipboard for Ctrl+V
             keyboard.copy_to_clipboard(reply["text"])
         else:  # put the old clipboard back only when sure the paste landed, or the dictation would be lost
-            keyboard.paste(reply["text"], paste_keys, restore=reply.get("paste") == "paste")
+            keyboard.paste(reply["text"], paste_keys, restore=focus in ("paste", "terminal"))
     except keyboard.PasteError as error:
         report(str(error))
         return 1
@@ -78,7 +82,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
 
-    paste_help = "keys that paste in the focused app, e.g. ctrl+shift+v for terminals (default: %(default)s)"
+    paste_help = "keys that paste in the focused app; terminals get ctrl+shift+v when the default is used (default: %(default)s)"
     toggle_cmd = commands.add_parser("toggle", help="start listening, or stop and paste the text (bind this to a hotkey)")
     toggle_cmd.add_argument("--paste-keys", type=key_combo, default=DEFAULT_PASTE_KEYS, help=paste_help)
     commands.add_parser("start", help="start listening; does nothing if already listening (for hold-to-talk key press)")

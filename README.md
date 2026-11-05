@@ -66,13 +66,13 @@ Run `setup` again with the option you want to change:
 ```sh
 justyap setup --hotkey F9                  # a single key
 justyap setup --hotkey '<Ctrl><Shift>h'    # any GNOME accelerator
-justyap setup --paste-keys ctrl+shift+v    # for terminals
+justyap setup --paste-keys shift+insert    # apps that paste with other keys
 ```
 
 | Option | Default | Notes |
 | --- | --- | --- |
 | `--hotkey` | `<Super><Alt>h` | Any key or combination GNOME doesn't already use. `Pause`, `Insert` and `F9` are good single keys. `setup` warns about conflicts. |
-| `--paste-keys` | `ctrl+v` | The keys that paste in your apps. Terminals usually need `ctrl+shift+v`. |
+| `--paste-keys` | `ctrl+v` | The keys that paste in your apps. With the default, justyap presses `ctrl+shift+v` instead when it can see a terminal has focus. |
 
 The dictation language follows Claude Code's `language` setting (`/config` in Claude Code).
 On desktops other than GNOME, `setup` prints the command to bind in your keyboard settings.
@@ -124,7 +124,7 @@ Logs: `journalctl --user -u justyap -f`.
 | "Voice mode requires a Claude.ai account" | Run `claude` and `/login` with your claude.ai account |
 | "No access to /dev/uinput" | Re-run `./install.sh` |
 | "No speech detected" | Check the input device in Settings → Sound |
-| Pastes everywhere except the terminal | `justyap setup --paste-keys ctrl+shift+v` |
+| Pastes everywhere except the terminal | Your terminal doesn't tell justyap it's a terminal. Run `justyap setup --paste-keys ctrl+shift+v`, which most text fields also accept |
 | No island appears | `sudo apt install python3-gi python3-gi-cairo gir1.2-gtk-3.0` |
 | Enter and Esc don't paste or cancel | GNOME only; re-run `justyap setup` |
 
