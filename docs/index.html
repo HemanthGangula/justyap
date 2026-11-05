@@ -21,6 +21,18 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"justyap for Linux","applicationCategory":"UtilitiesApplication","operatingSystem":"Linux (Ubuntu, Debian, Fedora, Arch)","description":"Voice typing for every Linux app, powered by Claude Code's built-in /voice speech-to-text. No model to download, no API key.","url":"https://hemanthgangula.github.io/justyap/","codeRepository":"https://github.com/HemanthGangula/justyap","license":"https://opensource.org/licenses/MIT","author":{"@type":"Person","name":"Hemanth","url":"https://github.com/HemanthGangula"}}
 </script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is there a Wispr Flow alternative for Linux?","acceptedAnswer":{"@type":"Answer","text":"Yes. Wispr Flow isn't on Linux yet. If you use Claude Code on a paid Claude plan, justyap turns its built-in voice into typing for every Linux app."}},
+{"@type":"Question","name":"Why is Claude Code /voice not available?","acceptedAnswer":{"@type":"Answer","text":"Voice needs Claude Code 2.1.69 or newer, signed in with a claude.ai account on a paid plan. It isn't available on the Free plan or with an API key. Run claude, then /login."}},
+{"@type":"Question","name":"Can I use Claude Code's voice mode outside the terminal?","acceptedAnswer":{"@type":"Answer","text":"Not on its own: /voice types into Claude Code's prompt. justyap runs a hidden session, takes the transcript and pastes it wherever your cursor is."}},
+{"@type":"Question","name":"How do I get voice typing on Ubuntu 24.04?","acceptedAnswer":{"@type":"Answer","text":"Clone the repo and run ./install.sh. It installs what it needs with apt and sets your hotkey. No speech model to download."}},
+{"@type":"Question","name":"Does it work on Wayland?","acceptedAnswer":{"@type":"Answer","text":"Yes, on Wayland and X11."}},
+{"@type":"Question","name":"Does it work on Fedora, Arch or Linux Mint?","acceptedAnswer":{"@type":"Answer","text":"It should. It's tested on Ubuntu 24.04 with GNOME. The install tab for your distro lists the packages to install first."}},
+{"@type":"Question","name":"Where does my audio go?","acceptedAnswer":{"@type":"Answer","text":"Where it goes when you use /voice in Claude Code: to Anthropic's speech-to-text, through Claude Code. justyap never records or stores audio."}},
+{"@type":"Question","name":"Which languages does it support?","acceptedAnswer":{"@type":"Answer","text":"The ones Claude Code's voice supports. It follows Claude Code's language setting."}}
+]}
+</script>
 <style>
 :root{
   --bg:#0c0b0d; --panel:#141318; --line:#25232a; --line2:#35323b;
@@ -49,6 +61,9 @@ kbd.down{background:var(--accent);color:var(--ink);border-color:#b55f43;transfor
 
 /* ---------- hero (phone first) ---------- */
 .top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.toplinks{display:flex;gap:18px;align-items:center}
+.toplinks .dl{font-size:14px;color:var(--muted);text-decoration:none}
+.toplinks .dl:hover{color:var(--text)}
 .top a.gh{font-size:14px;text-decoration:none;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:7px 14px}
 .hero{position:relative;padding-bottom:40px}
 .pitch{text-align:center;position:relative;z-index:4}
@@ -143,6 +158,66 @@ h2 em{color:var(--accent)}
 .fine{margin:10px 0 0;font:12px/1.6 var(--mono);color:var(--faint)}
 .install .ctas{margin-top:26px}
 
+/* install by distro */
+.tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -20px 16px;padding:0 20px;justify-content:flex-start}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;font:600 14px var(--sans);color:var(--muted);background:none;border:1px solid var(--line2);border-radius:999px;padding:9px 15px;cursor:pointer;min-height:40px}
+.tab[aria-selected=true]{background:var(--text);color:var(--bg);border-color:var(--text)}
+@media (min-width:700px){.tabs{justify-content:center;margin:0 0 16px;padding:0}}
+.panel{max-width:620px;margin:0 auto;text-align:left}
+.panel[hidden]{display:none}
+.badge{display:inline-flex;align-items:center;gap:6px;font:600 12px var(--mono);border-radius:999px;padding:5px 10px;margin-bottom:12px}
+.badge.ok{color:var(--ok);background:rgba(115,217,140,.1)}
+.badge.help{color:#e6c07b;background:rgba(230,192,123,.1)}
+.badge.soon{color:var(--muted);background:rgba(255,255,255,.05)}
+.panel .note{color:var(--muted);font-size:14.5px;margin:12px 2px 0}
+.panel .note a{color:var(--text)}
+
+/* compare */
+.cmp{display:grid;gap:12px}
+.col{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.col.us{border-color:rgba(217,120,87,.55)}
+.col h3{margin:0 0 12px;font-size:18px}
+.col.us h3{color:var(--accent)}
+.col dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:14.5px}
+.col dt{color:var(--faint);font:12.5px var(--mono);padding-top:2px}
+.col dd{margin:0;color:#d6d2cb}
+@media (min-width:860px){.cmp{grid-template-columns:repeat(3,1fr)}}
+.asof{font:12px var(--mono);color:var(--faint);margin-top:14px}
+
+/* how it works (developers) */
+.dev{background:linear-gradient(180deg,#0e0d11,var(--bg))}
+.dev .lede{color:var(--muted);max-width:36em;margin:-12px 0 28px;font-size:16px}
+.pipe{display:grid;gap:10px;counter-reset:p}
+.pipe details{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.pipe details[open]{border-color:var(--line2)}
+.pipe summary{list-style:none;cursor:pointer;padding:16px 18px;display:grid;grid-template-columns:auto 1fr auto;gap:2px 14px;align-items:center}
+.pipe summary::-webkit-details-marker{display:none}
+.pipe summary::before{counter-increment:p;content:counter(p,decimal-leading-zero);grid-column:1;grid-row:1/span 2;font:600 12px var(--mono);color:var(--accent)}
+.pipe summary::after{content:"+";grid-column:3;grid-row:1/span 2;font:400 20px/1 var(--mono);color:var(--faint);transition:transform .2s}
+.pipe details[open] summary::after{transform:rotate(45deg)}
+.pipe summary b{font-size:16px;grid-column:2}
+.pipe summary span{color:var(--muted);font-size:14px;grid-column:2}
+.pipe summary code,.dev .lede code{font-family:var(--mono);font-size:.9em;color:var(--text)}
+.pipe pre{margin:0;padding:14px 18px 16px;border-top:1px solid var(--line);background:#0a0a0c;font:12.5px/1.65 var(--mono);color:#cfcbc4;overflow-x:auto}
+.pipe pre i{font-style:normal;color:var(--faint)}
+.pipe pre em{font-style:normal;color:var(--accent)}
+.pipe .file{display:block;font:11px var(--mono);color:var(--faint);margin-bottom:8px}
+.pipe{max-width:860px}
+.proofs{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0}
+.proofs i{font:normal 12.5px var(--mono);color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:6px 12px}
+.dev .ctas{margin-top:30px;justify-content:flex-start}
+
+/* faq */
+.faq{max-width:820px}
+.faq details{border-bottom:1px solid var(--line);padding:16px 0}
+.faq summary{cursor:pointer;font-size:17px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:400 20px/1 var(--mono);color:var(--accent);flex:none;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq p{color:#cfcbc4;margin:10px 0 0;font-size:15.5px}
+.faq code{font-family:var(--mono);font-size:.9em;color:var(--text)}
+
 footer{border-top:1px solid var(--line);padding:28px 0 40px}
 footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--faint)}
 footer nav{display:flex;gap:18px;flex-wrap:wrap}
@@ -158,7 +233,7 @@ footer a{text-decoration:none;color:var(--muted)}
   <div class="wrap">
     <div class="top">
       <a class="wordmark" href="./">just<b>yap</b><small>for linux</small></a>
-      <a class="gh" href="https://github.com/HemanthGangula/justyap">GitHub ↗</a>
+      <nav class="toplinks"><a class="dl for-desk" href="#how-it-works">How it works</a><a class="gh" href="https://github.com/HemanthGangula/justyap">GitHub ↗</a></nav>
     </div>
 
     <div class="pitch headline">
@@ -229,17 +304,153 @@ footer a{text-decoration:none;color:var(--muted)}
 <section class="install" id="install">
   <div class="wrap">
     <p class="kicker">Install</p>
-    <h2>Two commands. <em>Then just talk.</em></h2>
-    <div class="cmd">
-      <div class="head"><span>terminal</span><button class="copy" id="copy" type="button">Copy</button></div>
-<pre><b>$ </b>git clone https://github.com/HemanthGangula/justyap
-<b>$ </b>cd justyap && ./install.sh</pre>
+    <h2>Voice typing on Ubuntu, Fedora, Arch and <em>Mint</em>.</h2>
+    <div class="tabs" role="tablist" aria-label="Your Linux distribution">
+      <button class="tab" role="tab" aria-selected="true" aria-controls="d-ubuntu" id="t-ubuntu">Ubuntu</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="d-debian" id="t-debian">Debian · Mint · Pop!_OS</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="d-fedora" id="t-fedora">Fedora</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="d-arch" id="t-arch">Arch</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="d-omarchy" id="t-omarchy">Omarchy</button>
     </div>
+
+    <div class="panel" role="tabpanel" id="d-ubuntu" aria-labelledby="t-ubuntu">
+      <span class="badge ok">✓ Tested on Ubuntu 24.04 · GNOME · Wayland</span>
+      <div class="cmd"><div class="head"><span>terminal</span><button class="copy" type="button">Copy</button></div>
+<pre><b>$ </b>git clone https://github.com/HemanthGangula/justyap
+<b>$ </b>cd justyap &amp;&amp; ./install.sh</pre></div>
+      <p class="note">The installer gets everything with apt and sets up your hotkey.</p>
+    </div>
+    <div class="panel" role="tabpanel" id="d-debian" aria-labelledby="t-debian" hidden>
+      <span class="badge help">Should work · help us test it</span>
+      <div class="cmd"><div class="head"><span>terminal</span><button class="copy" type="button">Copy</button></div>
+<pre><b>$ </b>git clone https://github.com/HemanthGangula/justyap
+<b>$ </b>cd justyap &amp;&amp; ./install.sh</pre></div>
+      <p class="note">The installer uses apt here too. On desktops other than GNOME (like Cinnamon on Mint), it prints one command to bind to a key in your keyboard settings.</p>
+    </div>
+    <div class="panel" role="tabpanel" id="d-fedora" aria-labelledby="t-fedora" hidden>
+      <span class="badge help">Should work · help us test it</span>
+      <div class="cmd"><div class="head"><span>terminal</span><button class="copy" type="button">Copy</button></div>
+<pre><b>$ </b>sudo dnf install wl-clipboard xclip python3-gobject python3-cairo gtk3 at-spi2-core uv
+<b>$ </b>git clone https://github.com/HemanthGangula/justyap
+<b>$ </b>cd justyap &amp;&amp; ./install.sh</pre></div>
+      <p class="note">Fedora Workstation runs GNOME, so the installer sets up your hotkey for you.</p>
+    </div>
+    <div class="panel" role="tabpanel" id="d-arch" aria-labelledby="t-arch" hidden>
+      <span class="badge help">Should work · help us test it</span>
+      <div class="cmd"><div class="head"><span>terminal</span><button class="copy" type="button">Copy</button></div>
+<pre><b>$ </b>sudo pacman -S wl-clipboard xclip python-gobject python-cairo gtk3 at-spi2-core uv
+<b>$ </b>git clone https://github.com/HemanthGangula/justyap
+<b>$ </b>cd justyap &amp;&amp; ./install.sh</pre></div>
+      <p class="note">Not on GNOME? The installer prints one command to bind to any key.</p>
+    </div>
+    <div class="panel" role="tabpanel" id="d-omarchy" aria-labelledby="t-omarchy" hidden>
+      <span class="badge soon">Coming soon</span>
+      <p class="note" style="margin-top:0">justyap is getting an Omarchy dictation backend, so Omarchy's own dictation keys can use it. Want to test it first? <a href="https://github.com/HemanthGangula/justyap">Watch the repo</a>.</p>
+    </div>
+
     <p class="then">Then pick any free hotkey. Press it, talk, press Enter.</p>
-    <p class="fine">Tested on Ubuntu 24.04 (GNOME, Wayland) · needs Claude Code on a paid Claude plan · not affiliated with Anthropic</p>
+    <p class="fine">Needs Claude Code on a paid Claude plan · Wayland and X11 · not affiliated with Anthropic</p>
     <div class="ctas">
       <button class="btn primary for-phone send" type="button">Send to laptop</button>
       <a class="btn ghost" href="https://github.com/HemanthGangula/justyap">Read the code</a>
+    </div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="wrap">
+    <p class="kicker">Compared</p>
+    <h2>A Wispr Flow alternative for <em>Linux</em>.</h2>
+    <div class="cmp">
+      <div class="col us"><h3>justyap</h3><dl>
+        <dt>Linux</dt><dd>Yes</dd>
+        <dt>Cost</dt><dd>Included with a paid Claude plan</dd>
+        <dt>Setup</dt><dd>No model, no API key</dd>
+        <dt>Code</dt><dd>Open source, MIT</dd></dl></div>
+      <div class="col"><h3>Wispr Flow</h3><dl>
+        <dt>Linux</dt><dd>Waitlist</dd>
+        <dt>Cost</dt><dd>$15/month, or $12/month billed yearly</dd>
+        <dt>Setup</dt><dd>Account and app</dd>
+        <dt>Code</dt><dd>Closed</dd></dl></div>
+      <div class="col"><h3>Local Whisper apps</h3><dl>
+        <dt>Linux</dt><dd>Yes</dd>
+        <dt>Cost</dt><dd>Free</dd>
+        <dt>Setup</dt><dd>Download a speech model (Voxtype's base English one is 150 MB)</dd>
+        <dt>Code</dt><dd>Usually open source</dd></dl></div>
+    </div>
+    <p class="asof">Wispr Flow and Voxtype details as of November 2026.</p>
+  </div>
+</section>
+
+<section class="dev" id="how-it-works">
+  <div class="wrap">
+    <p class="kicker">For developers</p>
+    <h2>How it works: a real Claude Code session, <em>out of sight</em>.</h2>
+    <p class="lede">No screen scraping, no prompt ever sent, no API calls of its own. justyap drives the same <code>claude</code> you run every day.</p>
+    <div class="pipe">
+      <details open><summary><b>A session you never see</b><span>A user service keeps <code>claude</code> running in a pseudo-terminal, with /voice on for that session only.</span></summary>
+<pre><span class="file">daemon.py</span>VOICE_SETTINGS = json.dumps({<em>"voice"</em>: {<em>"enabled"</em>: True, <em>"mode"</em>: <em>"hold"</em>, <em>"autoSubmit"</em>: False}})
+
+self.pid, self.fd = pty.fork()
+os.execv(self.claude, [self.claude, <em>"--settings"</em>, VOICE_SETTINGS])</pre></details>
+
+      <details><summary><b>Your hotkey talks over a socket</b><span>The shortcut runs <code>justyap toggle</code>, which asks the service over a Unix socket only you can open.</span></summary>
+<pre><span class="file">daemon.py</span>server = socket.socket(socket.AF_UNIX)
+umask = os.umask(0o177)  <i># owner-only socket</i>
+server.bind(str(SOCKET_PATH))</pre></details>
+
+      <details><summary><b>Holding Space, every 33 ms</b><span>/voice listens while Space is held. In a terminal a held key is just the same byte repeating, so justyap repeats it.</span></summary>
+<pre><span class="file">daemon.py</span>KEY_REPEAT_INTERVAL = <em>0.033</em>
+HOLD_KEY = <em>b" "</em>
+
+if holding:
+    self.session.write(HOLD_KEY)
+timeout = KEY_REPEAT_INTERVAL if holding else ...</pre></details>
+
+      <details><summary><b>The island reads Claude's own meter</b><span>Claude Code draws a microphone meter in its terminal. The island's bars follow that meter, so what you see is what Claude hears.</span></summary>
+<pre><span class="file">daemon.py</span>MIC_METER = <em>"▁▂▃▄▅▆▇"</em>
+
+for char in reversed(text):
+    if char in MIC_METER:
+        return (MIC_METER.index(char) + 1) / len(MIC_METER)</pre></details>
+
+      <details><summary><b>The text comes back through $EDITOR</b><span>Ctrl+G opens Claude Code's editor, and that editor is justyap. It takes the text and leaves the prompt empty, so nothing is submitted.</span></summary>
+<pre><span class="file">daemon.py</span>def grab(path):
+    <i>"""Act as Claude Code's $EDITOR: hand the prompt to the daemon and leave it empty."""</i>
+    staging.write_text(prompt.read_text())
+    staging.replace(TRANSCRIPT_PATH)
+    prompt.write_text(<em>""</em>)</pre></details>
+
+      <details><summary><b>Pasting into the right app</b><span>The accessibility tree says what has focus. A text field gets Ctrl+V and your old clipboard back, a terminal gets Ctrl+Shift+V, and when it can't tell, your words stay on the clipboard.</span></summary>
+<pre><span class="file">overlay.py · __main__.py · keyboard.py</span>if target.get_role() == Atspi.Role.TERMINAL:
+    kinds.add(<em>"terminal"</em>)
+return kinds.pop() if len(kinds) == 1 else None  <i># disagree? play safe</i>
+
+if focus == <em>"terminal"</em> and paste_keys == DEFAULT_PASTE_KEYS:
+    paste_keys = TERMINAL_PASTE_KEYS
+fcntl.ioctl(fd, UI_DEV_CREATE)  <i># a virtual keyboard, for one keypress</i></pre></details>
+    </div>
+    <div class="proofs"><i>zero Python packages</i><i>tests run the real service against a fake claude</i><i>CI on Python 3.10 and 3.13</i><i>MIT</i></div>
+    <div class="ctas">
+      <a class="btn primary" href="https://github.com/HemanthGangula/justyap">Read the code on GitHub</a>
+      <a class="btn ghost" href="https://github.com/HemanthGangula/justyap/stargazers">Star it</a>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <p class="kicker">FAQ</p>
+    <h2>Questions people <em>search</em>.</h2>
+    <div class="faq">
+      <details><summary>Is there a Wispr Flow alternative for Linux?</summary><p>Yes. Wispr Flow isn't on Linux yet. If you use Claude Code on a paid Claude plan, justyap turns its built-in voice into typing for every Linux app.</p></details>
+      <details><summary>Why is Claude Code /voice not available?</summary><p>Voice needs Claude Code 2.1.69 or newer, signed in with a claude.ai account on a paid plan. It isn't available on the Free plan or with an API key. Run <code>claude</code>, then <code>/login</code>.</p></details>
+      <details><summary>Can I use Claude Code's voice mode outside the terminal?</summary><p>Not on its own: /voice types into Claude Code's prompt. justyap runs a hidden session, takes the transcript and pastes it wherever your cursor is.</p></details>
+      <details><summary>How do I get voice typing on Ubuntu 24.04?</summary><p>Clone the repo and run <code>./install.sh</code>. It installs what it needs with apt and sets your hotkey. No speech model to download.</p></details>
+      <details><summary>Does it work on Wayland?</summary><p>Yes, on Wayland and X11.</p></details>
+      <details><summary>Does it work on Fedora, Arch or Linux Mint?</summary><p>It should. It's tested on Ubuntu 24.04 with GNOME. The install tab for your distro has the packages to install first, and if you try it, an issue on GitHub telling us how it went helps a lot.</p></details>
+      <details><summary>Where does my audio go?</summary><p>Where it goes when you use /voice in Claude Code: to Anthropic's speech-to-text, through Claude Code. justyap never records or stores audio.</p></details>
+      <details><summary>Which languages does it support?</summary><p>The ones Claude Code's voice supports. It follows Claude Code's <code>language</code> setting (<code>/config</code> in Claude Code).</p></details>
     </div>
   </div>
 </section>
@@ -385,11 +596,18 @@ footer a{text-decoration:none;color:var(--muted)}
     if (navigator.share) { try { await navigator.share({ title: 'justyap for Linux', text: 'Voice typing for every Linux app', url }); } catch {} return; }
     try { await navigator.clipboard.writeText(url); toast('Link copied. Open it on your laptop.'); } catch { toast(url); }
   }));
-  document.getElementById('copy').addEventListener('click', async e => {
-    try { await navigator.clipboard.writeText('git clone https://github.com/HemanthGangula/justyap\ncd justyap && ./install.sh'); e.target.textContent = 'Copied'; }
-    catch { e.target.textContent = 'Select it'; }
-    setTimeout(() => e.target.textContent = 'Copy', 1600);
-  });
+  document.querySelectorAll('.copy').forEach(btn => btn.addEventListener('click', async () => {
+    const text = btn.closest('.cmd').querySelector('pre').innerText.replace(/^\$ /gm, '');
+    try { await navigator.clipboard.writeText(text); btn.textContent = 'Copied'; } catch { btn.textContent = 'Select it'; }
+    setTimeout(() => btn.textContent = 'Copy', 1600);
+  }));
+
+  // distro tabs
+  const tabs = [...document.querySelectorAll('.tab')];
+  const pick = tab => tabs.forEach(t => { const on = t === tab; t.setAttribute('aria-selected', on); document.getElementById(t.getAttribute('aria-controls')).hidden = !on; });
+  tabs.forEach(t => t.addEventListener('click', () => pick(t)));
+  const ua = navigator.userAgent.toLowerCase(); // ponytail: browsers rarely name the distro; Ubuntu and Fedora sometimes do
+  if (ua.includes('fedora')) pick(document.getElementById('t-fedora'));
 })();
 </script>
 </body>
