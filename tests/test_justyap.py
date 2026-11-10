@@ -176,5 +176,27 @@ class ClaudeNotListeningTest(DaemonCase):
         self.assertEqual(self.request("cancel"), {"state": "idle"})
 
 
+SYSTEM_PYTHON = "/usr/bin/python3"
+OVERLAY_CHECK = """
+import importlib.util, sys
+from unittest import mock
+spec = importlib.util.spec_from_file_location("overlay", sys.argv[1])
+overlay = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(overlay)
+overlay.Atspi = mock.MagicMock()
+app = mock.MagicMock(**{"get_child_count.return_value": 2, "get_child_at_index.side_effect": [None, mock.MagicMock()]})
+overlay.Atspi.get_desktop.return_value = mock.MagicMock(**{"get_child_count.return_value": 2, "get_child_at_index.side_effect": [None, app]})
+print(overlay.focus_kind())
+"""
+
+
+@unittest.skipIf(subprocess.run([SYSTEM_PYTHON, "-c", "import gi, cairo"], capture_output=True).returncode, "no PyGObject")
+class OverlayTest(unittest.TestCase):
+    def test_focus_kind_skips_apps_and_windows_that_are_closing(self):
+        overlay = Path(cli.__file__).with_name("overlay.py")
+        result = subprocess.run([SYSTEM_PYTHON, "-c", OVERLAY_CHECK, str(overlay)], capture_output=True, text=True)
+        self.assertEqual(result.stdout.strip(), "text", result.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

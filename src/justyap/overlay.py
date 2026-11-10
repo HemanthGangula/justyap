@@ -66,8 +66,10 @@ def focus_kind() -> str | None:
     try:
         desktop = Atspi.get_desktop(0)
         for app in (desktop.get_child_at_index(i) for i in range(desktop.get_child_count())):
+            if app is None:
+                continue
             for window in (app.get_child_at_index(i) for i in range(app.get_child_count())):
-                if not window.get_state_set().contains(Atspi.StateType.ACTIVE):
+                if window is None or not window.get_state_set().contains(Atspi.StateType.ACTIVE):
                     continue
                 collection = window.get_collection_iface()
                 matches = collection.get_matches(focused, Atspi.CollectionSortOrder.CANONICAL, 1, True) if collection else []
@@ -77,7 +79,7 @@ def focus_kind() -> str | None:
                         kinds.add("terminal")
                     else:
                         kinds.add("text" if target.get_state_set().contains(Atspi.StateType.EDITABLE) else "other")
-    except GLib.Error:
+    except Exception:
         return None
     return kinds.pop() if len(kinds) == 1 else None
 
