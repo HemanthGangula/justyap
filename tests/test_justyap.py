@@ -184,8 +184,9 @@ spec = importlib.util.spec_from_file_location("overlay", sys.argv[1])
 overlay = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(overlay)
 overlay.Atspi = mock.MagicMock()
-app = mock.MagicMock(**{"get_child_count.return_value": 2, "get_child_at_index.side_effect": [None, mock.MagicMock()]})
-overlay.Atspi.get_desktop.return_value = mock.MagicMock(**{"get_child_count.return_value": 2, "get_child_at_index.side_effect": [None, app]})
+def node(*children):
+    return mock.MagicMock(**{"get_child_count.return_value": len(children), "get_child_at_index.side_effect": children})
+overlay.Atspi.get_desktop.return_value = node(None, node(None, mock.MagicMock()))
 print(overlay.focus_kind())
 """
 
